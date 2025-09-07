@@ -11,6 +11,7 @@ import { LoadingSpinner } from "@/components/loading-spinner"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { CheckCircle, ArrowLeft, ArrowRight } from "lucide-react"
+import { IntakeForm } from "./intake-form"
 
 // --- RAZORPAY LOGIC ---
 declare global {
@@ -61,17 +62,24 @@ export function BookingWizard() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { toast } = useToast()
-
+  const [isIntakeModalOpen, setIsIntakeModalOpen] = useState(false)
+  const [isIntakeFormSubmitted, setIsIntakeFormSubmitted] = useState(false)
+  const [intakeFormData, setIntakeFormData] = useState(null)
   const selectedService = useMemo(() => SERVICES.find((s) => s.id === serviceId)!, [serviceId])
-
   const canNextFrom1 = Boolean(serviceId)
   const canNextFrom2 = Boolean(date && time)
-  const canConfirm = Boolean(name && email && time && date && serviceId)
-
+  const canConfirm = Boolean(name && email && time && date && serviceId && isIntakeFormSubmitted)
   const handleDateTimeSelect = (selectedDate: string, selectedTime: string) => {
     setDate(selectedDate)
     setTime(selectedTime)
     setError(null)
+  }
+
+  const handleIntakeSubmitSuccess = (formData: any) => {
+    setIntakeFormData(formData) // Store the data
+    setIsIntakeFormSubmitted(true)
+    setIsIntakeModalOpen(false) // Close the modal
+    toast({ title: "Intake Form Submitted!", description: "You can now proceed with payment." })
   }
 
   const handleConfirm = async () => {
@@ -131,6 +139,7 @@ export function BookingWizard() {
                 user_email: user.email,
                 user_name: user.name,
               },
+              intakeData: intakeFormData,
             }),
           });
           const verifyJson = await verifyRes.json();
@@ -390,20 +399,19 @@ export function BookingWizard() {
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" /> Back
                 </Button>
-                <Button
-                  className="bg-gold hover:bg-gold/90 text-cream transition-colors min-w-[180px]"
-                  onClick={handleConfirm}
-                  disabled={!canConfirm || submitting}
-                >
-                  {submitting ? (
-                    <>
-                      <LoadingSpinner size="sm" />
-                      <span className="ml-2">Processing Payment...</span>
-                    </>
-                  ) : (
-                    "Pay & Confirm Booking"
-                  )}
-                </Button>
+                <div className="flex items-center gap-4">
+                  {/* --- THE FIX: New "Fill Intake Form" Button --- */}
+                  <Button variant="outline" onClick={() => setIsIntakeModalOpen(true)}>
+                    {isIntakeFormSubmitted ? "Intake Form Complete" : "Fill Intake Form"}
+                  </Button>
+                  <Button
+                    className="bg-gold hover:bg-gold/90 text-cream transition-colors min-w-[180px]"
+                    onClick={handleConfirm}
+                    disabled={!canConfirm || submitting}
+                  >
+                    {submitting ? (<><LoadingSpinner size="sm" /><span className="ml-2">Processing Payment...</span></>) : ("Pay & Confirm Booking")}
+                  </Button>
+                </div>
               </div>
               {error && (
                 <div
@@ -469,6 +477,14 @@ export function BookingWizard() {
           </Card>
         )}
       </div>
+      {isIntakeModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <IntakeForm
+            onClose={() => setIsIntakeModalOpen(false)}
+            onSubmitSuccess={handleIntakeSubmitSuccess}
+          />
+        </div>
+      )}
     </div>
   )
 }

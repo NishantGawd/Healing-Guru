@@ -1,108 +1,70 @@
 "use client"
 import { useState, useMemo } from "react"
-import { useRouter } from "next/navigation"
-import { useSWRConfig } from "swr" // THE FIX: Import SWR's mutate function
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
-import { LoadingSpinner } from "./loading-spinner"
-import { CheckCircle, ArrowLeft } from "lucide-react"
+import { ArrowLeft, X } from "lucide-react"
 
-const HEALTH_CONDITIONS = [
-  "Anxiety or Stress", "Chronic Pain", "Digestive Issues", "Depression", "Insomnia", "Headaches or Migraines", "None of the above"
-];
-const SESSION_GOALS = [
-  "Relaxation", "Emotional Healing", "Pain Relief", "Spiritual Growth", "Clarity and Focus", "Other"
-];
+const HEALTH_CONDITIONS = ["Anxiety or Stress", "Chronic Pain", "Digestive Issues", "Depression", "Insomnia", "Headaches or Migraines", "None of the above"];
+const SESSION_GOALS = ["Relaxation", "Emotional Healing", "Pain Relief", "Spiritual Growth", "Clarity and Focus", "Other"];
 
-export function IntakeForm({ appointmentId }: { appointmentId: string }) {
-  const router = useRouter()
-  const { toast } = useToast()
-  const { mutate } = useSWRConfig() // THE FIX: Initialize mutate
+interface IntakeFormProps {
+  onClose: () => void;
+  onSubmitSuccess: (data: any) => void;
+}
+
+export function IntakeForm({ onClose, onSubmitSuccess }: IntakeFormProps) {
   const [step, setStep] = useState(1)
-  const [submitting, setSubmitting] = useState(false)
-  
-  // State for form data
   const [healthConditions, setHealthConditions] = useState<string[]>([])
   const [medications, setMedications] = useState("")
   const [sessionGoals, setSessionGoals] = useState<string[]>([])
   const [otherGoal, setOtherGoal] = useState("")
 
-  // --- THE FIX: Form Validation Logic ---
-  const canNextFromStep1 = useMemo(() => {
-    return healthConditions.length > 0 && medications.trim() !== "";
-  }, [healthConditions, medications]);
-
+  const canNextFromStep1 = useMemo(() => healthConditions.length > 0 && medications.trim() !== "", [healthConditions, medications]);
   const canSubmitFromStep2 = useMemo(() => {
     if (sessionGoals.length === 0) return false;
     if (sessionGoals.includes("Other") && otherGoal.trim() === "") return false;
     return true;
   }, [sessionGoals, otherGoal]);
-  // ------------------------------------
 
-  const handleCheckboxChange = (
-    list: string[], 
-    setter: React.Dispatch<React.SetStateAction<string[]>>, 
-    item: string
-  ) => {
-    if (item === "None of the above") {
-      setter(list.includes(item) ? [] : [item]);
-    } else {
-      const newList = list.includes(item)
-        ? list.filter((i) => i !== item && i !== "None of the above")
-        : [...list.filter(i => i !== "None of the above"), item];
-      setter(newList);
-    }
+  const handleCheckboxChange = (setter: React.Dispatch<React.SetStateAction<string[]>>, item: string) => {
+    setter(prev => {
+      if (item === "None of the above") return prev.includes(item) ? [] : [item];
+      const newList = prev.includes(item)
+        ? prev.filter(i => i !== item && i !== "None of the above")
+        : [...prev.filter(i => i !== "None of the above"), item];
+      return newList;
+    });
   };
 
-  const handleSubmit = async () => {
-    setSubmitting(true);
-    try {
-      const finalGoals = sessionGoals.includes("Other") 
-        ? sessionGoals.filter(g => g !== "Other").concat(otherGoal) 
-        : sessionGoals;
-
-      const res = await fetch("/api/intake", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          appointment_id: appointmentId,
-          health_conditions: healthConditions,
-          medications,
-          session_goals: finalGoals,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to submit form.");
-      
-      toast({ title: "Intake Form Submitted!", description: "Thank you for providing your information." });
-      
-      // THE FIX: Mutate the appointments API endpoint to refresh the data
-      mutate((key: string) => typeof key === 'string' && key.startsWith('/api/appointments'));
-      
-      router.push("/dashboard/appointments");
-
-    } catch (error: any) {
-      toast({ title: "Submission Failed", description: error.message});
-    } finally {
-      setSubmitting(false);
-    }
+  const handleSubmit = () => {
+    const finalGoals = sessionGoals.includes("Other")
+      ? sessionGoals.filter(g => g !== "Other").concat(otherGoal)
+      : sessionGoals;
+    
+    const formData = {
+      health_conditions: healthConditions,
+      medications,
+      session_goals: finalGoals,
+    };
+    onSubmitSuccess(formData);
   };
 
   return (
-    <Card className="max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="font-serif text-2xl text-charcoal">Client Intake Form</CardTitle>
-        <p className="text-sm text-charcoal/70">
-          This information is confidential and helps tailor the session to your needs.
-        </p>
+    <Card className="w-full max-w-2xl animate-in fade-in zoom-in-95 flex flex-col max-h-[90vh]">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="font-serif text-2xl text-charcoal">Client Intake Form</CardTitle>
+          <p className="text-sm text-charcoal/70">This information is confidential.</p>
+        </div>
+        <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close intake form">
+            <X className="h-5 w-5" />
+        </Button>
       </CardHeader>
-      <CardContent>
-        {/* Step 1: Health History */}
+      <CardContent className="overflow-y-auto space-y-6">
         {step === 1 && (
-          <div className="space-y-6 animate-in fade-in">
+          <div className="space-y-6">
             <h3 className="font-semibold text-lg text-charcoal">Step 1 of 2: Health History</h3>
             <div className="space-y-4">
               <label className="font-medium text-charcoal">Current Health Conditions</label>
@@ -111,11 +73,11 @@ export function IntakeForm({ appointmentId }: { appointmentId: string }) {
                 {HEALTH_CONDITIONS.map((condition) => (
                   <div key={condition} className="flex items-center space-x-2">
                     <Checkbox
-                      id={condition}
+                      id={`intake-${condition}`}
                       checked={healthConditions.includes(condition)}
-                      onCheckedChange={() => handleCheckboxChange(healthConditions, setHealthConditions, condition)}
+                      onCheckedChange={() => handleCheckboxChange(setHealthConditions, condition)}
                     />
-                    <label htmlFor={condition} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    <label htmlFor={`intake-${condition}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                       {condition}
                     </label>
                   </div>
@@ -124,8 +86,6 @@ export function IntakeForm({ appointmentId }: { appointmentId: string }) {
             </div>
             <div className="space-y-2">
               <label htmlFor="medications" className="font-medium text-charcoal">Current Medications or Supplements</label>
-              <br />
-              <br />
               <Textarea
                 id="medications"
                 value={medications}
@@ -134,15 +94,10 @@ export function IntakeForm({ appointmentId }: { appointmentId: string }) {
                 className="min-h-[100px]"
               />
             </div>
-            <div className="flex justify-end">
-              <Button onClick={() => setStep(2)} disabled={!canNextFromStep1}>Next</Button>
-            </div>
           </div>
         )}
-
-        {/* Step 2: Goals */}
         {step === 2 && (
-          <div className="space-y-6 animate-in fade-in">
+          <div className="space-y-6">
             <h3 className="font-semibold text-lg text-charcoal">Step 2 of 2: Session Goals</h3>
             <div className="space-y-4">
               <label className="font-medium text-charcoal">What are your goals for this session?</label>
@@ -151,11 +106,11 @@ export function IntakeForm({ appointmentId }: { appointmentId: string }) {
                 {SESSION_GOALS.map((goal) => (
                   <div key={goal} className="flex items-center space-x-2">
                     <Checkbox
-                      id={goal}
+                      id={`goal-${goal}`}
                       checked={sessionGoals.includes(goal)}
-                      onCheckedChange={() => handleCheckboxChange(sessionGoals, setSessionGoals, goal)}
+                      onCheckedChange={() => handleCheckboxChange(setSessionGoals, goal)}
                     />
-                    <label htmlFor={goal} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    <label htmlFor={`goal-${goal}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                       {goal}
                     </label>
                   </div>
@@ -173,15 +128,19 @@ export function IntakeForm({ appointmentId }: { appointmentId: string }) {
                 </div>
               )}
             </div>
-            <div className="flex justify-between">
-              <Button variant="ghost" onClick={() => setStep(1)}><ArrowLeft className="w-4 h-4 mr-2" /> Back</Button>
-              <Button onClick={handleSubmit} disabled={!canSubmitFromStep2 || submitting}>
-                {submitting ? <LoadingSpinner size="sm" /> : "Submit Intake Form"}
-              </Button>
-            </div>
           </div>
         )}
       </CardContent>
+      <CardFooter className="flex justify-between border-t pt-4">
+        <Button variant="ghost" onClick={() => step === 1 ? onClose() : setStep(1)}>
+          {step === 1 ? 'Cancel' : <><ArrowLeft className="w-4 h-4 mr-2" /> Back</>}
+        </Button>
+        {step === 1 ? (
+          <Button onClick={() => setStep(2)} disabled={!canNextFromStep1}>Next</Button>
+        ) : (
+          <Button onClick={handleSubmit} disabled={!canSubmitFromStep2}>Submit Intake Form</Button>
+        )}
+      </CardFooter>
     </Card>
   );
 }

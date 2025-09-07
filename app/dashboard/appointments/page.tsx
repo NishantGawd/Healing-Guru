@@ -16,11 +16,10 @@ interface Appointment {
   service: string;
   date: string;
   time: string;
-  intake_form_completed: boolean;
-  feedback_submitted: boolean;
+  feedback_submitted: boolean; 
 }
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+const fetcher = (url: string) => fetch(url, { cache: 'no-store' }).then((r) => r.json())
 
 function AppointmentsInner() {
   const { user, cancelAppointment, rescheduleAppointment } = useAuth()
@@ -50,10 +49,10 @@ function AppointmentsInner() {
     if (!window.confirm("Are you sure you want to cancel this appointment?")) return;
     try {
       await cancelAppointment(id);
-      toast({ title: "Appointment Cancelled", description: "Your appointment has been successfully cancelled." });
+      toast({ title: "Appointment Cancelled" });
       mutate();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Failed to cancel." });
+      toast({ title: "Error", description: error.message });
     }
   }
 
@@ -72,7 +71,7 @@ function AppointmentsInner() {
       setIsModalOpen(false);
       mutate();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Failed to reschedule." });
+      toast({ title: "Error", description: error.message });
     }
   }
 
@@ -84,37 +83,22 @@ function AppointmentsInner() {
 
           <section className="space-y-4">
             <h2 className="font-serif text-2xl">Upcoming Appointments</h2>
-            {upcoming.length === 0 ? (
-              <p className="text-charcoal/70">No upcoming appointments.</p>
-            ) : (
+            {upcoming.length > 0 ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 {upcoming.map((a) => (
                   <Card key={a.id}>
                     <CardHeader>
-                      <CardTitle className="text-xl flex justify-between items-center">
-                        {a.service}
-                        {a.intake_form_completed ? (
-                          <Badge variant="secondary">Intake Complete</Badge>
-                        ) : (
-                          <Badge variant="destructive">Intake Required</Badge>
-                        )}
-                      </CardTitle>
+                      <CardTitle className="text-xl">{a.service}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="text-sm text-charcoal/80">
                         <div><strong>Date:</strong> {new Date(a.date + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
                         <div><strong>Time:</strong> {a.time}</div>
                       </div>
-                      {/* THE FIX: Restore the original button layout */}
                       <div className="flex items-center gap-3">
                         <Button variant="outline" className="border-brand text-brand bg-cream cursor-pointer" onClick={() => openRescheduleModal(a)}>
                           Reschedule
                         </Button>
-                        {!a.intake_form_completed && (
-                          <Link href={`/dashboard/appointments/${a.id}/intake`} passHref>
-                            <Button>Fill Intake Form</Button>
-                          </Link>
-                        )}
                         <Button onClick={() => handleCancel(a.id)} variant="destructive" className="bg-charcoal text-cream cursor-pointer">
                           Cancel
                         </Button>
@@ -123,14 +107,12 @@ function AppointmentsInner() {
                   </Card>
                 ))}
               </div>
-            )}
+            ) : (<p className="text-charcoal/70">No upcoming appointments.</p>)}
           </section>
           
           <section className="space-y-4">
             <h2 className="font-serif text-2xl">Past Appointments</h2>
-            {past.length === 0 ? (
-              <p className="text-charcoal/70">No past appointments.</p>
-            ) : (
+            {past.length > 0 ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 {past.map((a) => (
                   <Card key={a.id}>
@@ -153,7 +135,7 @@ function AppointmentsInner() {
                   </Card>
                 ))}
               </div>
-            )}
+            ) : (<p className="text-charcoal/70">No past appointments.</p>)}
           </section>
         </div>
       </main>

@@ -20,7 +20,7 @@ export function FeedbackForm({ appointmentId }: { appointmentId: string }) {
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      toast({ title: "Please select a rating.", variant: "destructive" });
+      toast({ title: "Please select a rating."});
       return;
     }
     setLoading(true);
@@ -36,7 +36,7 @@ export function FeedbackForm({ appointmentId }: { appointmentId: string }) {
       toast({ title: "Feedback Submitted!", description: "Thank you for sharing your experience." });
       router.push('/dashboard/appointments');
     } catch (error: any) {
-      toast({ title: "Submission Failed", description: error.message, variant: "destructive" });
+      toast({ title: "Submission Failed", description: error.message});
     } finally {
       setLoading(false);
     }
@@ -68,6 +68,7 @@ export function FeedbackForm({ appointmentId }: { appointmentId: string }) {
         </div>
         <div>
           <Label htmlFor="comments">Additional Comments (Optional)</Label>
+          <br />
           <Textarea
             id="comments"
             placeholder="What went well? What could be improved?"

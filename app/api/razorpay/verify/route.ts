@@ -11,25 +11,12 @@ export async function POST(req: Request) {
       razorpay_payment_id,
       razorpay_signature,
       booking,
+      intakeData,
     } = await req.json();
 
-    if (
-      !process.env.RAZORPAY_KEY_SECRET ||
-      !razorpay_order_id ||
-      !razorpay_payment_id ||
-      !razorpay_signature
-    ) {
-      return NextResponse.json({ error: "Missing payment details" }, { status: 400 });
-    }
-
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest("hex");
-
-    if (expectedSignature !== razorpay_signature) {
-      return NextResponse.json({ error: "Signature mismatch" }, { status: 400 });
-    }
+    if (!process.env.RAZORPAY_KEY_SECRET) throw new Error("Razorpay secret not configured");
+    const expectedSignature = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET).update(`${razorpay_order_id}|${razorpay_payment_id}`).digest("hex");
+    if (expectedSignature !== razorpay_signature) return NextResponse.json({ error: "Signature mismatch" }, { status: 400 });
 
     const cookieStore = await cookies();
     const supabase = createServerClient(
@@ -41,47 +28,57 @@ export async function POST(req: Request) {
           set: (name: string, value: string, options: CookieOptions) => {
             try {
               cookieStore.set({ name, value, ...options });
-            } catch {}
+            } catch { }
           },
           remove: (name: string, options: CookieOptions) => {
             try {
               cookieStore.set({ name, value: "", ...options });
-            } catch {}
+            } catch { }
           },
         },
       }
     );
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
+
     const correctedDate = format(parseISO(booking.date), "yyyy-MM-dd");
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
-    }
+    const { data: appointmentData, error: appointmentError } = await supabase
+      .from("appointments")
+      .insert({
+        user_id: user.id,
+        service_id: booking.serviceId,
+        date: correctedDate,
+        time: booking.time,
+        payment_id: razorpay_payment_id,
+        payment_status: "paid",
+        user_email: booking.user_email,
+        user_name: booking.user_name,
+      })
+      .select('id')
+      .single();
 
-    const payload = {
-      user_id: user.id,
-      service_id: booking?.serviceId ?? null,
-      date: correctedDate,
-      time: booking?.time ?? null,
-      payment_id: razorpay_payment_id,
-      payment_status: "paid",
-      user_email: booking.user_email,
-      user_name: booking.user_name,
-    };
+    if (appointmentError) throw appointmentError;
+    if (!appointmentData) throw new Error("Failed to create appointment and retrieve its ID.");
 
-    const { error: insertError } = await supabase.from("appointments").insert(payload);
-    if (insertError) {
-      console.error("Supabase Insert Error:", insertError.message);
-      return NextResponse.json(
-        { ok: true, warning: "Payment verified, but failed to store appointment.", details: insertError.message },
-        { status: 200 }
-      );
+    if (intakeData) {
+      const { error: intakeError } = await supabase.from("intake_forms").insert({
+        appointment_id: appointmentData.id,
+        user_id: user.id,
+        health_conditions: intakeData.health_conditions,
+        medications: intakeData.medications,
+        session_goals: intakeData.session_goals,
+      });
+      if (intakeError) {
+        console.error("Critical Error: Payment was successful but intake form failed to save.", intakeError);
+      }
     }
 
     return NextResponse.json({ ok: true, message: "Appointment booked successfully!" });
-  } catch (e: any) {
-    console.error("Verify Endpoint Error:", e.message);
-    return NextResponse.json({ error: e?.message || "Unexpected error" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Verify Endpoint Error:", error.message);
+    return NextResponse.json({ error: "Verification failed.", details: error.message }, { status: 500 });
   }
 }
+
