@@ -1,0 +1,19 @@
+{
+  "SiteHeader": {
+    "home": "Home",
+    "about": "About Me",
+    "services": "Services",
+    "resources": "Resources",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "bookAppointment": "Book an Appointment",
+    "login": "Login"
+  },
+  "HomePage": {
+    "heroTitle": "Find Your Inner Peace and Harmony",
+    "heroSubtitle": "Our compassionate, holistic practices will help you feel grounded, clear, and renewed.",
+    "heroButton": "Begin Your Journey",
+    "introTitle": "A Nurturing Space for You",
+    "introText": "You are safe. You are seen. You are healing. At Healing Guru, we create a sanctuary where you can breathe, release tension, and reconnect with your inner wisdom."
+  }
+}

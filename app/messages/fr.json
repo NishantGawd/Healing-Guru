@@ -1,0 +1,19 @@
+{
+  "SiteHeader": {
+    "home": "Accueil",
+    "about": "À Propos",
+    "services": "Services",
+    "resources": "Ressources",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "bookAppointment": "Prendre Rendez-vous",
+    "login": "Connexion"
+  },
+  "HomePage": {
+    "heroTitle": "Trouvez Votre Paix et Harmonie Intérieure",
+    "heroSubtitle": "Nos pratiques holistiques et compatissantes vous aideront à vous sentir ancré, clair et renouvelé.",
+    "heroButton": "Commencez Votre Voyage",
+    "introTitle": "Un Espace Bienveillant pour Vous",
+    "introText": "Vous êtes en sécurité. Vous êtes vu. Vous êtes en guérison. Chez Healing Guru, nous créons un sanctuaire où vous pouvez respirer, relâcher les tensions et vous reconnecter avec votre sagesse intérieure."
+  }
+}

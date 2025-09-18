@@ -12,6 +12,7 @@ import { AuthProvider } from "@/components/auth-context";
 import { LeafIcon, LotusIcon, SparkIcon } from "@/components/icons";
 import { HumanizedTestimonials } from "@/components/HumanizedTestimonials";
 import { MindfulBreathing } from "@/components/MindfulBreathing";
+import { ImageWaveDivider } from "@/components/wave-divider";
 
 const services = [
   { title: "Reiki Healing", desc: "Restore energetic balance and promote deep relaxation.", Icon: SparkIcon },
@@ -93,7 +94,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
+        <ImageWaveDivider />
         {/* Services Overview Section */}
         <section className="section bg-beige/60">
           <div className="container-soft">
@@ -157,4 +158,3 @@ export default function HomePage() {
     </AuthProvider>
   );
 }
-

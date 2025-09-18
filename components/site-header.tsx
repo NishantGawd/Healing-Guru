@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { HealingLogo } from "@/components/healing-logo"
 import { usePathname } from "next/navigation"
 import { AmbientSoundToggle } from "@/components/AmbientSoundToggle";
+import { LanguageSwitcher } from "@/components/Language-switcher";
 
 const nav = [
  { href: "/", label: "Home" },
@@ -43,6 +44,7 @@ export function SiteHeader() {
 
     <div className="hidden md:flex items-center gap-3">
      <AmbientSoundToggle />
+     <LanguageSwitcher />
      <Link href="/appointments">
       <Button className="bg-gold text-cream hover:opacity-90">Book an Appointment</Button>
      </Link>

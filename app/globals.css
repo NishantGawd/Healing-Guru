@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0);
+  --background: oklch(100% 0.00011 271.152);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -76,35 +76,38 @@
 }
 
 @theme inline {
-  /* --- NEW HEALING COLOR PALETTE --- */
+  /* --- NEW HEALING EARTH COLOR PALETTE --- */
   --color-brand: #A3B899;      /* Earthy Sage Green */
-  --color-accent: #D9E4D6;     /* Light Sage Mist */
-  --color-cream: #FCFBF4;      /* Softer, warmer cream */
-  --color-beige: #F3EFE7;      /* Warmer Beige */
-  --color-charcoal: #4E4C4B;   /* Softer, warmer charcoal */
-  --color-gold: #D4AF37;
-  /* --- FONT UPDATE --- */
+  --color-accent: #D9E4D6;     /* Light Sage Mist (for hover states) */
+  --color-cream: #FCFBF4;      /* Soft, Warm Cream (main background) */
+  --color-beige: #F3EFE7;      /* Warm Beige (secondary background) */
+  --color-charcoal: #4E4C4B;   /* Warm, Soft Charcoal (for text) */
+  --color-gold: #D4AF37;       /* Muted, Elegant Gold (for buttons) */
+
+  /* --- FONT UPDATE (This should already be here from your original file) --- */
   --font-sans: var(--font-quicksand);
   --font-serif: var(--font-lora);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+
+  /* --- The rest of this block links the new colors to Tailwind's system --- */
+  --color-background: var(--color-cream);
+  --color-foreground: var(--color-charcoal);
+  --color-card: var(--color-cream);
+  --color-card-foreground: var(--color-charcoal);
+  --color-popover: var(--color-cream);
+  --color-popover-foreground: var(--color-charcoal);
+  --color-primary: var(--color-brand);
+  --color-primary-foreground: var(--color-cream);
+  --color-secondary: var(--color-beige);
+  --color-secondary-foreground: var(--color-charcoal);
+  --color-muted: var(--color-beige);
+  --color-muted-foreground: var(--color-charcoal);
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-charcoal);
+  --color-destructive: oklch(0.577 0.245 27.325); /* This can remain unchanged */
+  --color-destructive-foreground: oklch(0.577 0.245 27.325); /* This can remain unchanged */
+  --color-border: var(--color-beige);
+  --color-input: var(--color-beige);
+  --color-ring: var(--color-brand);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
