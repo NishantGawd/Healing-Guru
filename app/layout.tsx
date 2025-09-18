@@ -1,22 +1,23 @@
 import type React from "react";
 import type { Metadata } from "next";
 // 1. Import Lora (for headings) and Quicksand (for body text)
-import { Lora, Quicksand } from "next/font/google";
+import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 // 2. Configure both fonts
-const lora = Lora({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-lora", // This will be our serif/heading font
-});
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair-display', // For headings
+  display: 'swap',
+})
 
-const quicksand = Quicksand({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-quicksand", // This will be our sans-serif/body font
-});
+const lato = Lato({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-lato', // For body text
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: "Healing Guru — Spiritual Healing & Appointments",
@@ -34,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     // 3. Apply both font variables to the html tag
-    <html lang="en" className={`${lora.variable} ${quicksand.variable} antialiased`}>
+    <html lang="en" className={`${playfairDisplay.variable} ${lato.variable} antialiased`}>
       <body className="text-charcoal">
         {children}
         <Toaster />
