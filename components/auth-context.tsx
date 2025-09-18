@@ -7,7 +7,7 @@ import { type AuthChangeEvent, type Session } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 
-type User = { name: string; email: string; phone?: string }
+type User = { id: string; name: string; email: string; phone?: string }
 type Appointment = {
   id: string
   userEmail: string
@@ -59,19 +59,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const sUser = data.user
         if (sUser) {
           const name = (sUser.user_metadata?.full_name as string) || (sUser.email?.split("@")[0] ?? "User")
-          setUser({ name, email: sUser.email ?? "" })
-          localStorage.setItem(USER_KEY, JSON.stringify({ name, email: sUser.email ?? "" }))
+          // Add the 'id' to the user object
+          const userPayload = { id: sUser.id, name, email: sUser.email ?? "" }
+          setUser(userPayload)
+          localStorage.setItem(USER_KEY, JSON.stringify(userPayload))
         }
       })()
 
-    // FIX 2: APPLY TYPES TO THE CALLBACK PARAMETERS
     const { data: sub } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       if (!mounted) return
       if (session?.user) {
         const sUser = session.user
         const name = (sUser.user_metadata?.full_name as string) || (sUser.email?.split("@")[0] ?? "User")
-        setUser({ name, email: sUser.email ?? "" })
-        localStorage.setItem(USER_KEY, JSON.stringify({ name, email: sUser.email ?? "" }))
+        // Also add the 'id' here
+        const userPayload = { id: sUser.id, name, email: sUser.email ?? "" }
+        setUser(userPayload)
+        localStorage.setItem(USER_KEY, JSON.stringify(userPayload))
       } else {
         setUser(null)
         localStorage.removeItem(USER_KEY)
@@ -118,7 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateUser = (updates: Partial<User>) => {
     setUser((prev) => {
-      const merged = { ...(prev || { name: "", email: "" }), ...updates }
+      const merged = { ...(prev || { id: "", name: "", email: "" }), ...updates }
       localStorage.setItem(USER_KEY, JSON.stringify(merged))
       return merged
     })

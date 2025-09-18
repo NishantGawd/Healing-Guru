@@ -9,6 +9,7 @@ import { useAuth } from "@/components/auth-context"
 import { cn } from "@/lib/utils"
 import { HealingLogo } from "@/components/healing-logo"
 import { usePathname } from "next/navigation"
+import { AmbientSoundToggle } from "@/components/AmbientSoundToggle"; // 1. Import the new component
 
 const nav = [
   { href: "/", label: "Home" },
@@ -16,7 +17,7 @@ const nav = [
   { href: "/services", label: "Services" },
   { href: "/resources", label: "Resources" },
   { href: "/contact", label: "Contact" },
-  { href: "/faq", label: "FAQ" }, // added
+  { href: "/faq", label: "FAQ" },
 ]
 
 export function SiteHeader() {
@@ -41,6 +42,9 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
+          {/* 2. Add the AmbientSoundToggle component here */}
+          <AmbientSoundToggle />
+
           <Link href="/appointments">
             <Button className="bg-gold text-cream hover:opacity-90">Book an Appointment</Button>
           </Link>
@@ -62,11 +66,8 @@ export function SiteHeader() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <Link href="/dashboard/profile">
-                  <DropdownMenuItem>My Profile</DropdownMenuItem>
-                </Link>
-                <Link href="/dashboard/appointments">
-                  <DropdownMenuItem>My Appointments</DropdownMenuItem>
+                <Link href="/dashboard">
+                  <DropdownMenuItem>My Dashboard</DropdownMenuItem>
                 </Link>
                 <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
@@ -80,7 +81,7 @@ export function SiteHeader() {
           aria-label="Toggle menu"
         >
           <span className="sr-only">Open Menu</span>
-          <svg width="24" height="24" viewBox="0 0 24 24" className="fill-current">
+          <svg width="24" height="24" viewBox="0 0 24" className="fill-current">
             <path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" />
           </svg>
         </button>
@@ -104,11 +105,8 @@ export function SiteHeader() {
             </Link>
           ) : (
             <div className="flex flex-col gap-2">
-              <Link href="/dashboard/profile" onClick={() => setOpen(false)} className="py-2">
-                My Profile
-              </Link>
-              <Link href="/dashboard/appointments" onClick={() => setOpen(false)} className="py-2">
-                My Appointments
+              <Link href="/dashboard" onClick={() => setOpen(false)} className="py-2">
+                My Dashboard
               </Link>
               <button
                 onClick={() => {

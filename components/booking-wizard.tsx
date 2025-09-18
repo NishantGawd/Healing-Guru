@@ -93,6 +93,17 @@ export function BookingWizard() {
         return
       }
 
+      const verificationRes = await fetch("/api/razorpay/verify-slot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, time }),
+      });
+
+      const verificationJson = await verificationRes.json();
+      if (!verificationRes.ok || !verificationJson.isAvailable) {
+        throw new Error(verificationJson.error || "This time slot is no longer available. Please select another.");
+      }
+
       const amount = AMOUNT_PAISE[serviceId]
       const orderRes = await fetch("/api/razorpay/order", {
         method: "POST",
@@ -174,22 +185,27 @@ export function BookingWizard() {
             toast({ title: "Appointment confirmed!", description: "There was an issue sending the confirmation email, but your booking is secure." });
           }
 
-          if (phone) { // Only send if a phone number was provided
+          if (phone) {
             try {
-              await fetch('/api/send-whatsapp', {
+              const formattedDate = new Date(date + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric" });
+              await fetch('/api/send-sms', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  to: phone, // The user's phone number from the form
-                  serviceName: selectedService.title,
-                  date: date,
-                  time: time,
+                  to: phone,
+                  // IMPORTANT: Replace this with the ID from your Courier Dashboard
+                  templateId: "FVG7MNGHG246VWM493PXF1BVA54N",
+                  data: {
+                    customerName: name,
+                    serviceName: selectedService.title,
+                    date: formattedDate,
+                    time: time
+                  }
                 }),
               });
-              toast({ title: "WhatsApp Sent!", description: "A confirmation has also been sent via WhatsApp." });
-            } catch (whatsappError) {
-              console.error("Failed to send WhatsApp message:", whatsappError);
-              // Don't block the user, just log the error
+              toast({ title: "SMS Sent!", description: "A confirmation has also been sent via SMS." });
+            } catch (smsError) {
+              console.error("Failed to send confirmation SMS:", smsError);
             }
           }
 
@@ -354,14 +370,17 @@ export function BookingWizard() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="phone">Phone Number</Label>
+                  <Label htmlFor="phone">Phone Number (for SMS reminders)</Label>
                   <Input
                     id="phone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="(555) 123-4567"
-                    className="focus:ring-2 focus:ring-brand focus:border-brand transition-colors"
+                    placeholder="+919876543210"
+                    type="tel"
                   />
+                  <p className="text-xs text-charcoal/60 mt-1">
+                    Please include country code (e.g., +91 for India).
+                  </p>
                 </div>
               </div>
 
@@ -401,7 +420,7 @@ export function BookingWizard() {
                 </Button>
                 <div className="flex items-center gap-4">
                   {/* --- THE FIX: New "Fill Intake Form" Button --- */}
-                  <Button variant="outline" onClick={() => setIsIntakeModalOpen(true)}>
+                  <Button variant="outline" onClick={() => setIsIntakeModalOpen(true)} disabled={isIntakeFormSubmitted}>
                     {isIntakeFormSubmitted ? "Intake Form Complete" : "Fill Intake Form"}
                   </Button>
                   <Button
@@ -461,7 +480,7 @@ export function BookingWizard() {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-                <Link href="/dashboard/appointments">
+                <Link href="/dashboard">
                   <Button
                     variant="outline"
                     className="border-brand text-brand hover:bg-brand/5 transition-colors bg-transparent"

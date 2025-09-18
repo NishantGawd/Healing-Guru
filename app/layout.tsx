@@ -1,11 +1,22 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter, Playfair_Display } from "next/font/google"
-import "./globals.css"
-import { Toaster } from "@/components/ui/toaster"
+import type React from "react";
+import type { Metadata } from "next";
+// 1. Import Lora (for headings) and Quicksand (for body text)
+import { Lora, Quicksand } from "next/font/google";
+import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" })
-const playfair = Playfair_Display({ subsets: ["latin"], display: "swap", variable: "--font-playfair" })
+// 2. Configure both fonts
+const lora = Lora({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-lora", // This will be our serif/heading font
+});
+
+const quicksand = Quicksand({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-quicksand", // This will be our sans-serif/body font
+});
 
 export const metadata: Metadata = {
   title: "Healing Guru — Spiritual Healing & Appointments",
@@ -14,15 +25,21 @@ export const metadata: Metadata = {
   icons: {
     icon: "/logo.svg",
   },
-}
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable} antialiased`}>
-      <body className="bg-cream text-charcoal">
+    // 3. Apply both font variables to the html tag
+    <html lang="en" className={`${lora.variable} ${quicksand.variable} antialiased`}>
+      <body className="text-charcoal">
         {children}
         <Toaster />
       </body>
     </html>
-  )
+  );
 }
+

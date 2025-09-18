@@ -1,26 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Star, Loader2 } from "lucide-react";
+import { Star, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function FeedbackForm({ appointmentId }: { appointmentId: string }) {
+// THE FIX: Updated props for modal functionality
+interface FeedbackFormProps {
+  appointmentId: string;
+  onClose: () => void;
+  onSubmitSuccess: () => void;
+}
+
+export function FeedbackForm({ appointmentId, onClose, onSubmitSuccess }: FeedbackFormProps) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comments, setComments] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const { toast } = useToast();
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      toast({ title: "Please select a rating."});
+      toast({ title: "Please select a rating.", variant: "destructive" });
       return;
     }
     setLoading(true);
@@ -34,19 +39,24 @@ export function FeedbackForm({ appointmentId }: { appointmentId: string }) {
       if (!response.ok) throw new Error(result.error || "Failed to submit feedback.");
       
       toast({ title: "Feedback Submitted!", description: "Thank you for sharing your experience." });
-      router.push('/dashboard/appointments');
+      onSubmitSuccess(); // THE FIX: Call the success function to refresh the dashboard
     } catch (error: any) {
-      toast({ title: "Submission Failed", description: error.message});
+      toast({ title: "Submission Failed", description: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
+      onClose(); // THE FIX: Close the modal regardless of success or failure
     }
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
-      <CardHeader>
-        <CardTitle>Session Feedback</CardTitle>
-        <CardDescription>Your feedback helps me improve. How was your session?</CardDescription>
+    // THE FIX: Changed to a Card component for a consistent modal look
+    <Card className="w-full max-w-lg animate-in fade-in zoom-in-95">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Session Feedback</CardTitle>
+          <CardDescription>Your feedback helps me improve. How was your session?</CardDescription>
+        </div>
+        <Button variant="ghost" size="icon" onClick={onClose}><X className="h-5 w-5" /></Button>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
@@ -57,7 +67,7 @@ export function FeedbackForm({ appointmentId }: { appointmentId: string }) {
                 key={star}
                 className={cn(
                   "h-8 w-8 cursor-pointer transition-colors",
-                  (hoverRating || rating) >= star ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                  (hoverRating || rating) >= star ? "text-gold fill-gold" : "text-charcoal/20"
                 )}
                 onClick={() => setRating(star)}
                 onMouseEnter={() => setHoverRating(star)}
@@ -68,17 +78,18 @@ export function FeedbackForm({ appointmentId }: { appointmentId: string }) {
         </div>
         <div>
           <Label htmlFor="comments">Additional Comments (Optional)</Label>
-          <br />
           <Textarea
             id="comments"
             placeholder="What went well? What could be improved?"
             value={comments}
             onChange={(e) => setComments(e.target.value)}
+            className="mt-2"
           />
         </div>
       </CardContent>
-      <CardFooter className="flex justify-end">
-        <Button onClick={handleSubmit} disabled={loading}>
+      <CardFooter className="flex justify-end gap-2">
+        <Button variant="ghost" onClick={onClose}>Cancel</Button>
+        <Button onClick={handleSubmit} disabled={loading} className="bg-gold hover:bg-gold/90 text-cream">
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Submit Feedback
         </Button>
@@ -86,3 +97,4 @@ export function FeedbackForm({ appointmentId }: { appointmentId: string }) {
     </Card>
   );
 }
+

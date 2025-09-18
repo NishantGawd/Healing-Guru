@@ -1,60 +1,36 @@
-import type React from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { SiteHeader } from "@/components/site-header"
-import { SiteFooter } from "@/components/site-footer"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TestimonialsCarousel } from "@/components/testimonials-carousel"
-import { AuthProvider } from "@/components/auth-context"
+"use client";
 
-function LeafIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...props}>
-      <path
-        fill="currentColor"
-        d="M21 3c-6 1-10.5 5.5-11.9 11.3C6.7 15 5 16.9 5 19c0 2.2 1.8 4 4 4 2.1 0 4-1.7 4.7-4.1C19.5 13.6 23 9 21 3z"
-      />
-    </svg>
-  )
-}
-function LotusIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...props}>
-      <path
-        fill="currentColor"
-        d="M12 2s2.5 3.7 2.5 6.3S12 12 12 12s-2.5-1.7-2.5-3.7S12 2 12 2zm8 7s-1.8 3.6-4 4.7C18.5 15.5 20 18 20 18s-3.2-1.2-5-3c-1.2 1.5-3 3-3 3s-1.8-1.5-3-3c-1.8 1.8-5 3-5 3s1.5-2.5 4-4.3C5.8 12.6 4 9 4 9s3.3.3 6 2c.2-1.5 2-3 2-3s1.8 1.5 2 3c2.7-1.7 6-2 6-2z"
-      />
-    </svg>
-  )
-}
-function SparkIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...props}>
-      <path
-        fill="currentColor"
-        d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2zm7 10l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3zM2 12l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z"
-      />
-    </svg>
-  )
-}
+import type React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion, type Variant } from "framer-motion";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AuthProvider } from "@/components/auth-context";
+import { LeafIcon, LotusIcon, SparkIcon } from "@/components/icons";
+import { HumanizedTestimonials } from "@/components/HumanizedTestimonials";
+import { MindfulBreathing } from "@/components/MindfulBreathing";
 
 const services = [
   { title: "Reiki Healing", desc: "Restore energetic balance and promote deep relaxation.", Icon: SparkIcon },
-  {
-    title: "Meditation Guidance",
-    desc: "Cultivate presence and inner calm with personalized sessions.",
-    Icon: LotusIcon,
-  },
+  { title: "Meditation Guidance", desc: "Cultivate presence and inner calm with personalized sessions.", Icon: LotusIcon },
   { title: "Spiritual Counseling", desc: "Compassionate support to navigate life’s transitions.", Icon: LeafIcon },
-]
+];
 
 export default function HomePage() {
+  const cardHover: Variant = {
+    scale: 1.05,
+    boxShadow: "0px 10px 30px -5px rgba(54, 69, 79, 0.15)",
+    transition: { type: "spring", stiffness: 400, damping: 17 },
+  };
+
   return (
     <AuthProvider>
       <SiteHeader />
       <main>
-        {/* Hero */}
+        {/* Hero Section */}
         <section className="relative h-[72vh] min-h-[500px] w-full">
           <Image
             src="/misty-forest-soft-morning-light.png"
@@ -66,18 +42,39 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-charcoal/30" />
           <div className="container-soft relative z-10 flex h-full items-center">
             <div className="max-w-2xl text-cream">
-              <h1 className="text-balance font-serif text-4xl sm:text-5xl">Find Your Inner Peace and Harmony</h1>
-              <p className="mt-3">Compassionate, holistic healing to help you feel grounded, clear, and renewed.</p>
-              <div className="mt-6">
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="text-balance text-4xl sm:text-5xl"
+              >
+                Find Your Inner Peace and Harmony
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                className="mt-3"
+              >
+                {/* COPYWRITING: More direct and personal invitation. */}
+                Our compassionate, holistic practices will help you feel grounded, clear, and renewed.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+                className="mt-6"
+              >
                 <Link href="/appointments">
-                  <Button className="bg-gold text-cream hover:opacity-90 cursor-pointer">Book a Consultation</Button>
+                  {/* COPYWRITING: Changed "Book a Consultation" to a softer call to action. */}
+                  <Button className="bg-gold text-cream glowing-button cursor-pointer">Begin Your Journey</Button>
                 </Link>
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Intro */}
+        {/* Intro Section */}
         <section className="section">
           <div className="container-soft grid items-center gap-8 md:grid-cols-2">
             <Image
@@ -88,59 +85,76 @@ export default function HomePage() {
               className="rounded-lg border bg-cream"
             />
             <div>
-              <h2 className="font-serif text-3xl text-charcoal">Welcome</h2>
-              <p className="mt-3 text-charcoal/80 leading-relaxed">
-                At Healing Guru, we create a nurturing space where you can breathe, release tension, and reconnect with
-                your inner wisdom. With gentle, time-honored practices, we guide you toward balance and clarity.
+              {/* COPYWRITING: Changed "Welcome" to be more descriptive and inviting. */}
+              <h2 className="text-3xl text-charcoal">A Nurturing Space for You</h2>
+              <p className="mt-3 text-charcoal/80">
+                You are safe. You are seen. You are healing. At Healing Guru, we create a sanctuary where you can breathe, release tension, and reconnect with your inner wisdom.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Services overview */}
+        {/* Services Overview Section */}
         <section className="section bg-beige/60">
           <div className="container-soft">
-            <h2 className="font-serif text-3xl text-charcoal mb-6">Our Healing Services</h2>
+            {/* COPYWRITING: Changed "Our Healing Services" to be more benefit-focused. */}
+            <h2 className="text-3xl text-charcoal mb-6 text-center">Paths to Your Wellbeing</h2>
             <div className="grid gap-6 md:grid-cols-3">
               {services.map(({ title, desc, Icon }) => (
-                <Card key={title}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                      <Icon className="text-brand" />
-                      <span>{title}</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-charcoal/80">{desc}</p>
-                    <Link href="/services" className="mt-3 inline-block text-brand underline">
-                      Learn More
-                    </Link>
-                  </CardContent>
-                </Card>
+                <motion.div whileHover={cardHover} key={title}>
+                  <Card className="h-full">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-3">
+                        <Icon className="text-brand" />
+                        <span>{title}</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-charcoal/80">{desc}</p>
+                      <Link href="/services" className="mt-3 inline-block text-brand font-semibold hover:underline">
+                        {/* COPYWRITING: Changed "Learn More" to be more inviting. */}
+                        Explore this Path
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="section">
-          <div className="container-soft">
-            <h2 className="font-serif text-3xl text-charcoal mb-6">What Clients Say</h2>
-            <TestimonialsCarousel />
+        {/* Mindful Breathing section */}
+        <section className="section healing-gradient">
+          <div className="container-soft text-center">
+            <h2 className="text-3xl text-charcoal mb-4">A Moment for You</h2>
+            <p className="text-charcoal/80 max-w-2xl mx-auto mb-6">
+              We invite you to pause, find your center, and join us in a moment of mindful breathing.
+            </p>
+            <MindfulBreathing />
           </div>
         </section>
 
-        {/* Final CTA */}
+        {/* Testimonials Section */}
+        <section className="section">
+          <div className="container-soft">
+            <h2 className="text-3xl text-charcoal mb-6 text-center">What Clients Say</h2>
+            <HumanizedTestimonials />
+          </div>
+        </section>
+
+        {/* Final CTA Section */}
         <section className="section bg-brand">
           <div className="container-soft text-center">
-            <h3 className="font-serif text-3xl text-cream text-balance">Ready to Begin Your Transformation?</h3>
+            <h3 className="text-3xl text-cream text-balance">Ready to Begin Your Transformation?</h3>
             <Link href="/appointments" className="inline-block mt-6">
-              <Button className="bg-gold text-cream hover:opacity-90">Book an Appointment</Button>
+               {/* COPYWRITING: Changed "Book an Appointment" to be more personal. */}
+              <Button className="bg-gold text-cream glowing-button">Schedule Your Session</Button>
             </Link>
           </div>
         </section>
       </main>
       <SiteFooter />
     </AuthProvider>
-  )
+  );
 }
+
