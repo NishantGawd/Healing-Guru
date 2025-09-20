@@ -17,10 +17,12 @@ type Appointment = {
   createdAt: string
 }
 
+// UPDATED: Added signInWithGoogle to the context type
 type Ctx = {
   user: User | null
   login: (email: string, password: string) => Promise<void>
   signUp: (fullName: string, email: string, password: string) => Promise<void>
+  signInWithGoogle: () => Promise<void> // <-- ADDED THIS LINE
   updateProfile: (updates: { name: string; phone?: string }) => Promise<void>;
   logout: () => Promise<void>
   updateUser: (updates: Partial<User>) => void
@@ -59,7 +61,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const sUser = data.user
         if (sUser) {
           const name = (sUser.user_metadata?.full_name as string) || (sUser.email?.split("@")[0] ?? "User")
-          // Add the 'id' to the user object
           const userPayload = { id: sUser.id, name, email: sUser.email ?? "" }
           setUser(userPayload)
           localStorage.setItem(USER_KEY, JSON.stringify(userPayload))
@@ -71,7 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session?.user) {
         const sUser = session.user
         const name = (sUser.user_metadata?.full_name as string) || (sUser.email?.split("@")[0] ?? "User")
-        // Also add the 'id' here
         const userPayload = { id: sUser.id, name, email: sUser.email ?? "" }
         setUser(userPayload)
         localStorage.setItem(USER_KEY, JSON.stringify(userPayload))
@@ -88,27 +88,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => localStorage.setItem(APPT_KEY, JSON.stringify(appointments)), [appointments])
 
-  // REFACTOR 1: SIMPLIFY THE LOGIN FUNCTION (IT ONLY LOGS IN NOW)
   const login = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error; // Throw error to be caught by the form
+    if (error) throw error;
   }
 
-  // REFACTOR 2: IMPLEMENT THE DEDICATED SIGNUP FUNCTION
   const signUp = async (fullName: string, email: string, password: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        // This is how you pass the full_name to Supabase
         data: {
           full_name: fullName,
         },
         emailRedirectTo: `${window.location.origin}/api/auth/callback`,
       },
     });
-    if (error) throw error; // Throw error to be caught by the form
+    if (error) throw error;
   };
+
+  // --- NEW FUNCTION: Handles Google Sign-In ---
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) throw error; // This will be caught by your form component
+  };
+  // --- END NEW FUNCTION ---
 
   const logout = async () => {
     if (supabase) await supabase.auth.signOut()
@@ -129,20 +138,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateProfile = async (updates: { name: string; phone?: string }) => {
     if (!user || !supabase) throw new Error("User not authenticated");
-
-    // 1. Get the current Supabase user
     const { data: { user: authUser } } = await supabase.auth.getUser();
     if (!authUser) throw new Error("User not found");
-
-    // 2. Update the public.profiles table
     const { error } = await supabase
       .from("profiles")
       .update({ full_name: updates.name, phone: updates.phone })
       .eq("id", authUser.id);
-
     if (error) throw error;
-
-    // 3. Update the local state to reflect the changes immediately
     updateUser({ name: updates.name, phone: updates.phone });
   }
 
@@ -166,35 +168,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const cancelAppointment = async (id: string) => {
     if (!supabase) throw new Error("Supabase client not available");
-
-    // Remove from the database
     const { error } = await supabase.from("appointments").delete().eq("id", id);
     if (error) throw error;
-
-    // Remove from local state to update UI instantly
     setAppointments((prev) => prev.filter((x) => x.id !== id));
   };
 
   const rescheduleAppointment = async (id: string, newDate: string, newTime: string) => {
     if (!supabase) throw new Error("Supabase client not available");
-
-    // Update the record in the database
     const { data, error } = await supabase
       .from("appointments")
       .update({ date: newDate, time: newTime })
       .eq("id", id)
       .select();
-
     if (error) throw error;
-
     setAppointments((prev) =>
       prev.map((appt) => (appt.id === id ? { ...appt, date: newDate, time: newTime } : appt))
     );
   };
 
-  // FIX 3: ADD `signUp` TO THE CONTEXT VALUE
+  // UPDATED: Added signInWithGoogle to the context value
   const value = useMemo(
-    () => ({ user, login, signUp, logout, updateUser, updateProfile, updatePassword, sendPasswordResetEmail, appointments, addAppointment, cancelAppointment, rescheduleAppointment }),
+    () => ({ user, login, signUp, signInWithGoogle, logout, updateUser, updateProfile, updatePassword, sendPasswordResetEmail, appointments, addAppointment, cancelAppointment, rescheduleAppointment }),
     [user, appointments],
   )
   return <C.Provider value={value}>{children}</C.Provider>

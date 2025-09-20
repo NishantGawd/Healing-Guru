@@ -46,11 +46,11 @@ export function SiteHeader() {
      <AmbientSoundToggle />
      <LanguageSwitcher />
      <Link href="/appointments">
-      <Button className="bg-gold text-cream hover:opacity-90">Book an Appointment</Button>
+      <Button className="bg-gold text-cream hover:opacity-90 cursor-pointer">Book an Appointment</Button>
      </Link>
      {!user ? (
       <Link href="/login">
-       <Button variant="ghost" className="text-charcoal hover:bg-beige">
+       <Button variant="ghost" className="text-charcoal hover:bg-beige cursor-pointer">
         Login
        </Button>
       </Link>
@@ -58,7 +58,7 @@ export function SiteHeader() {
       <DropdownMenu>
        <DropdownMenuTrigger asChild>
         <button aria-label="Open profile menu">
-         <Avatar className="h-8 w-8">
+         <Avatar className="h-8 w-8 cursor-pointer">
           <AvatarFallback className="bg-beige text-charcoal">
            {user.name?.[0]?.toUpperCase() || "U"}
           </AvatarFallback>
@@ -67,9 +67,9 @@ export function SiteHeader() {
        </DropdownMenuTrigger>
        <DropdownMenuContent align="end">
         <Link href="/dashboard">
-         <DropdownMenuItem>My Dashboard</DropdownMenuItem>
+         <DropdownMenuItem className="cursor-pointer">My Dashboard</DropdownMenuItem>
         </Link>
-        <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={logout}>Logout</DropdownMenuItem>
        </DropdownMenuContent>
       </DropdownMenu>
      )}
@@ -95,7 +95,7 @@ export function SiteHeader() {
       </Link>
      ))}
      <Link href="/appointments" onClick={() => setOpen(false)}>
-      <Button className="bg-gold text-cream w-full mt-2">Book an Appointment</Button>
+      <Button className="bg-gold text-cream w-full mt-2 cursor-pointer">Book an Appointment</Button>
      </Link>
      {!user ? (
       <Link href="/login" onClick={() => setOpen(false)}>

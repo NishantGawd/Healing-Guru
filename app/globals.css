@@ -77,12 +77,12 @@
 
 @theme inline {
   /* --- NEW HEALING EARTH COLOR PALETTE --- */
-  --color-brand: #A3B899;      /* Earthy Sage Green */
-  --color-accent: #D9E4D6;     /* Light Sage Mist (for hover states) */
-  --color-cream: #FCFBF4;      /* Soft, Warm Cream (main background) */
-  --color-beige: #F3EFE7;      /* Warm Beige (secondary background) */
-  --color-charcoal: #4E4C4B;   /* Warm, Soft Charcoal (for text) */
-  --color-gold: #D4AF37;       /* Muted, Elegant Gold (for buttons) */
+  --color-brand: #a3b899; /* Earthy Sage Green */
+  --color-accent: #d9e4d6; /* Light Sage Mist (for hover states) */
+  --color-cream: #fcfbf4; /* Soft, Warm Cream (main background) */
+  --color-beige: #f3efe7; /* Warm Beige (secondary background) */
+  --color-charcoal: #4e4c4b; /* Warm, Soft Charcoal (for text) */
+  --color-gold: #d4af37; /* Muted, Elegant Gold (for buttons) */
 
   /* --- FONT UPDATE (This should already be here from your original file) --- */
   --font-sans: var(--font-quicksand);
@@ -138,7 +138,6 @@
   transition: all 0.3s ease-in-out;
 }
 
-
 layer base {
   * {
     @apply border-border outline-ring/50;
@@ -151,26 +150,45 @@ layer base {
 
     /* --- NEW BACKGROUND TEXTURE --- */
     background-color: var(--color-cream);
-    background-image: url('https://www.rawpixel.com/search/transparent%20texture');
+    background-image: url("https://www.rawpixel.com/search/transparent%20texture");
   }
   html {
     font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system;
   }
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-serif), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
     letter-spacing: normal;
   }
 }
 
-.bg-cream { background-color: var(--color-cream); }
-.bg-beige { background-color: var(--color-beige); }
-.bg-brand { background-color: var(--color-brand); }
-.bg-charcoal { background-color: var(--color-charcoal); }
-.bg-gold { background-color: var(--color-gold); }
+.bg-cream {
+  background-color: var(--color-cream);
+}
+.bg-beige {
+  background-color: var(--color-beige);
+}
+.bg-brand {
+  background-color: var(--color-brand);
+}
+.bg-charcoal {
+  background-color: var(--color-charcoal);
+}
+.bg-gold {
+  background-color: var(--color-gold);
+}
 
-.text-charcoal { color: var(--color-charcoal); }
-.text-cream { color: var(--color-cream); }
-.text-brand { color: var(--color-brand); }
+.text-charcoal {
+  color: var(--color-charcoal);
+}
+.text-cream {
+  color: var(--color-cream);
+}
+.text-brand {
+  color: var(--color-brand);
+}
 
 /* Layout helpers */
 .container-soft {
@@ -180,4 +198,16 @@ layer base {
 }
 .section {
   padding-block: 3rem;
+}
+
+@keyframes logo-pop {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
 }

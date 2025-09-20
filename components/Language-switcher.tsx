@@ -16,7 +16,7 @@ export function LanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         {/* The button styling is designed to match your existing header buttons */}
-        <Button variant="ghost" size="icon" aria-label="Change language">
+        <Button className = "cursor-pointer" variant="ghost" size="icon" aria-label="Change language">
           <Globe className="h-5 w-5 text-charcoal/80 group-hover:text-charcoal" />
         </Button>
       </DropdownMenuTrigger>

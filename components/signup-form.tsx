@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import { FcGoogle } from "react-icons/fc"; // ADDED: Icon for the button
 
 export function SignupForm({ onSwitch }: { onSwitch: () => void }) {
-  const { signUp } = useAuth();
+  const { signUp, signInWithGoogle } = useAuth(); // ADDED: signInWithGoogle
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,7 +61,6 @@ export function SignupForm({ onSwitch }: { onSwitch: () => void }) {
     }
   };
   
-  // THE FIX: New function to reset state before switching
   const handleSwitch = () => {
     setFullName("");
     setEmail("");
@@ -68,8 +68,8 @@ export function SignupForm({ onSwitch }: { onSwitch: () => void }) {
     setConfirmPassword("");
     setError(null);
     setPasswordMatchError(null);
-    setShowPassword(false); // Reset password visibility
-    setShowConfirmPassword(false); // Reset confirm password visibility
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     onSwitch();
   };
 
@@ -127,8 +127,25 @@ export function SignupForm({ onSwitch }: { onSwitch: () => void }) {
       <Button type="submit" className="w-full bg-gold text-cream" disabled={loading}>
         {loading ? "Creating account..." : "Sign Up"}
       </Button>
+
+      {/* --- ADDED: Divider and Google Sign-In Button --- */}
+      <div className="relative my-4">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-cream px-2 text-muted-foreground">
+            OR
+          </span>
+        </div>
+      </div>
+      <Button variant="outline" className="w-full" type="button" onClick={signInWithGoogle}>
+        <FcGoogle className="mr-1 h-5 w-5" />
+        Sign Up with Google
+      </Button>
+      {/* --- END ADDED SECTION --- */}
+
       <div className="text-center text-sm pt-2">
-        {/* THE FIX: Use the new handler function */}
         <button type="button" onClick={handleSwitch} className="underline cursor-pointer">Already have an account? Log in</button>
       </div>
     </form>

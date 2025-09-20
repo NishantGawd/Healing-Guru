@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Quicksand, Lora } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toaster";
 
 // This is your original font setup
 const quicksand = Quicksand({
@@ -35,6 +36,7 @@ export default function RootLayout({
         )}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );

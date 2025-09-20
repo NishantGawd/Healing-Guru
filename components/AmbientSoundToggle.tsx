@@ -40,7 +40,7 @@ export function AmbientSoundToggle() {
       variant="ghost" 
       size="icon"
       aria-label={isPlaying ? "Mute ambient sound" : "Play ambient sound"}
-      className="text-charcoal/70 hover:bg-beige hover:text-charcoal"
+      className="text-charcoal/70 hover:bg-beige hover:text-charcoal cursor-pointer"
     >
       {isPlaying ? (
         <Volume2 className="h-5 w-5" />

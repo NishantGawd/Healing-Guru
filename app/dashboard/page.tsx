@@ -439,13 +439,12 @@ function DashboardInner() {
 }
 
 function ProfileTabContent() {
-    // CORRECTED: Initialize the browser client with your env variables
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    const { user, updatePassword } = useAuth();
+    const { user, updatePassword, updateProfile } = useAuth();
     const { toast } = useToast();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -459,7 +458,6 @@ function ProfileTabContent() {
 
     useEffect(() => {
         const fetchProfile = async () => {
-            // CORRECTED: Use the directly imported 'User' type
             const typedUser = user as unknown as User;
             if (!typedUser) {
                 setInitialLoading(false);
@@ -497,8 +495,6 @@ function ProfileTabContent() {
         }
     }, [user, supabase, toast]);
 
-    // ... the rest of your handleSaveProfile, handleUpdatePassword, and return JSX functions
-    // do not need to be changed. You can copy them from your existing file.
     const handleSaveProfile = async () => {
         const currentUserId = user?.id;
         if (!currentUserId) {
@@ -518,7 +514,9 @@ function ProfileTabContent() {
 
             if (error) throw error;
 
+            updateProfile({ name: name, phone: phone });
             toast({ title: "Success!", description: "Your profile has been updated." });
+
         } catch (error: any) {
             toast({ title: "Error", description: error.message || "Failed to update profile." });
         } finally {
@@ -549,8 +547,6 @@ function ProfileTabContent() {
         }
     };
 
-
-
     if (initialLoading) {
         return <div className="flex justify-center items-center h-40"><LoadingSpinner /></div>;
     }
@@ -571,8 +567,9 @@ function ProfileTabContent() {
                     <Label htmlFor="phone">Phone</Label>
                     <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Your phone number" />
                 </div>
+                {/* --- THIS IS THE CORRECTED BUTTON --- */}
                 <Button onClick={handleSaveProfile} className="bg-gold text-cream" disabled={isSaving}>
-                    {isSaving ? "Saving..." : "Save Profile"}
+                    {isSaving ? <LoadingSpinner size="sm" /> : "Save Profile"}
                 </Button>
             </div>
             <div className="space-y-4">
@@ -587,7 +584,7 @@ function ProfileTabContent() {
                 </div>
                 {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
                 <Button onClick={handleUpdatePassword} className="bg-gold text-cream" disabled={passwordLoading}>
-                    {passwordLoading ? "Updating..." : "Update Password"}
+                    {passwordLoading ? <LoadingSpinner size="sm" /> : "Update Password"}
                 </Button>
             </div>
         </div>
