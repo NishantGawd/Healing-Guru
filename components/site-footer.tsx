@@ -10,10 +10,8 @@ export function SiteFooter() {
   return (
     <footer className="bg-charcoal text-cream">
       <div className="container mx-auto px-4 py-12">
-        {/* Using a 5-column grid for larger screens to fit all sections cleanly */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
           
-          {/* Brand Column */}
           <div className="space-y-4 lg:col-span-1">
             <Link href="/" className="flex items-center space-x-3">
               <HealingLogo className="w-9 h-9" />
@@ -31,41 +29,37 @@ export function SiteFooter() {
             </div>
           </div>
 
-             {/* Explore Column */}
           <div>
             <h3 className="font-semibold text-lg mb-4">Explore</h3>
             <ul className="space-y-2 text-sm">
                 <li><Link href="/about" className="text-cream/80 hover:text-gold">About Me</Link></li>
                 <li><Link href="/services" className="text-cream/80 hover:text-gold">Services</Link></li>
-                <li><Link href="/resources/blog" className="text-cream/80 hover:text-gold">Healing Blog</Link></li>
+                <li><Link href="/blog" className="text-cream/80 hover:text-gold">Healing Blog</Link></li>
                 <li><Link href="/contact" className="text-cream/80 hover:text-gold">Contact</Link></li>
                 <li><Link href="/faq" className="text-cream/80 hover:text-gold">FAQ</Link></li>
             </ul>
           </div>
 
-          {/* Services Column */}
+          {/* --- CORRECTED SERVICES LINKS FOR YOUR FOLDER STRUCTURE --- */}
           <div>
             <h3 className="font-semibold text-lg mb-4">Services</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/services/healing" className="text-cream/80 hover:text-gold transition-colors">Energy Healing</Link></li>
-              <li><Link href="/services/meditation" className="text-cream/80 hover:text-gold transition-colors">Guided Meditation</Link></li>
-              <li><Link href="/services/consultation" className="text-cream/80 hover:text-gold transition-colors">Personal Consultation</Link></li>
-              <li><Link href="/services/group" className="text-cream/80 hover:text-gold transition-colors">Group Sessions</Link></li>
-              <li><Link href="/services/workshops" className="text-cream/80 hover:text-gold transition-colors">Healing Workshops</Link></li>
+              <li><Link href="/footer_services/reiki-healing" className="text-cream/80 hover:text-gold transition-colors">Reiki Healing</Link></li>
+              <li><Link href="/footer_services/meditation-guidance" className="text-cream/80 hover:text-gold transition-colors">Meditation Guidance</Link></li>
+              <li><Link href="/footer_services/spiritual-counseling" className="text-cream/80 hover:text-gold transition-colors">Spiritual Counseling</Link></li>
             </ul>
           </div>
 
-          {/* Resources Column */}
+          {/* --- CORRECTED RESOURCES LINKS FOR YOUR FOLDER STRUCTURE --- */}
           <div>
             <h3 className="font-semibold text-lg mb-4">Resources</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/resources/meditation-guides" className="text-cream/80 hover:text-gold transition-colors">Meditation Guides</Link></li>
-              <li><Link href="/resources/downloads" className="text-cream/80 hover:text-gold transition-colors">Free Downloads</Link></li>
-              <li><Link href="/resources/testimonials" className="text-cream/80 hover:text-gold transition-colors">Client Stories</Link></li>
+              <li><Link href="/footer_resources/meditation-guides" className="text-cream/80 hover:text-gold transition-colors">Meditation Guides</Link></li>
+              <li><Link href="/footer_resources/free-downloads" className="text-cream/80 hover:text-gold transition-colors">Free Downloads</Link></li>
+              <li><Link href="/footer_resources/client-stories" className="text-cream/80 hover:text-gold transition-colors">Client Stories</Link></li>
             </ul>
           </div>
 
-          {/* Get In Touch & Trust Column */}
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Get In Touch</h3>
             <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
@@ -100,7 +94,6 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="border-t border-cream/20 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-cream/60 text-sm">
             © {new Date().getFullYear()} Healing Guru. All rights reserved.
@@ -115,3 +108,4 @@ export function SiteFooter() {
     </footer>
   );
 }
+
