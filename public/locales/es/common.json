@@ -1,0 +1,15 @@
+{
+  "home": "Inicio",
+  "about": "Sobre Mí",
+  "services": "Servicios",
+  "resources": "Recursos",
+  "contact": "Contacto",
+  "faq": "Preguntas Frecuentes",
+  "bookAppointment": "Reservar una Cita",
+  "login": "Iniciar Sesión",
+  "myDashboard": "Mi Panel",
+  "logout": "Cerrar Sesión",
+  "en": "English (Inglés)",
+  "es": "Español",
+  "fr": "Français (Francés)"
+}

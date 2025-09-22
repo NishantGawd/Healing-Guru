@@ -1,30 +1,32 @@
-"use client";
-
-import type React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { motion, type Variant } from "framer-motion";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SiteProvider } from "@/components/site-context";
-import { LeafIcon, LotusIcon, SparkIcon } from "@/components/icons";
-import { HumanizedTestimonials } from "@/components/HumanizedTestimonials";
-import { MindfulBreathing } from "@/components/MindfulBreathing";
+"use client"
+import Image from "next/image"
+import Link from "next/link"
+import { motion, type Variant } from "framer-motion"
+import { SiteHeader } from "@/components/site-header"
+import { SiteFooter } from "@/components/site-footer"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { SiteProvider } from "@/components/site-context"
+import { LeafIcon, LotusIcon, SparkIcon } from "@/components/icons"
+import { HumanizedTestimonials } from "@/components/HumanizedTestimonials"
+import { MindfulBreathing } from "@/components/MindfulBreathing"
 
 const services = [
   { title: "Reiki Healing", desc: "Restore energetic balance and promote deep relaxation.", Icon: SparkIcon },
-  { title: "Meditation Guidance", desc: "Cultivate presence and inner calm with personalized sessions.", Icon: LotusIcon },
+  {
+    title: "Meditation Guidance",
+    desc: "Cultivate presence and inner calm with personalized sessions.",
+    Icon: LotusIcon,
+  },
   { title: "Spiritual Counseling", desc: "Compassionate support to navigate life’s transitions.", Icon: LeafIcon },
-];
+]
 
 export default function HomePage() {
   const cardHover: Variant = {
     scale: 1.05,
     boxShadow: "0px 10px 30px -5px rgba(54, 69, 79, 0.15)",
     transition: { type: "spring", stiffness: 400, damping: 17 },
-  };
+  }
 
   return (
     <SiteProvider>
@@ -88,12 +90,13 @@ export default function HomePage() {
               {/* COPYWRITING: Changed "Welcome" to be more descriptive and inviting. */}
               <h2 className="text-3xl text-charcoal">A Nurturing Space for You</h2>
               <p className="mt-3 text-charcoal/80">
-                You are safe. You are seen. You are healing. At Healing Guru, we create a sanctuary where you can breathe, release tension, and reconnect with your inner wisdom.
+                You are safe. You are seen. You are healing. At Healing Guru, we create a sanctuary where you can
+                breathe, release tension, and reconnect with your inner wisdom.
               </p>
             </div>
           </div>
         </section>
-        
+
         {/* Services Overview Section */}
         <section className="section bg-beige/60">
           <div className="container-soft">
@@ -102,7 +105,7 @@ export default function HomePage() {
             <div className="grid gap-6 md:grid-cols-3">
               {services.map(({ title, desc, Icon }) => (
                 <motion.div whileHover={cardHover} key={title}>
-                  <Card className="h-full">
+                  <Card className="h-full card-healing border-accent/30">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-3">
                         <Icon className="text-brand" />
@@ -126,7 +129,7 @@ export default function HomePage() {
         {/* Mindful Breathing section */}
         <section className="section healing-gradient">
           <div className="container-soft text-center">
-            <h2 className="text-3xl text-charcoal mb-4">A Moment for You</h2>
+            <h2 className="text-3xl text-charcoal mb-4 breathe-animation">A Moment for You</h2>
             <p className="text-charcoal/80 max-w-2xl mx-auto mb-6">
               We invite you to pause, find your center, and join us in a moment of mindful breathing.
             </p>
@@ -147,7 +150,7 @@ export default function HomePage() {
           <div className="container-soft text-center">
             <h3 className="text-3xl text-cream text-balance">Ready to Begin Your Transformation?</h3>
             <Link href="/appointments" className="inline-block mt-6">
-               {/* COPYWRITING: Changed "Book an Appointment" to be more personal. */}
+              {/* COPYWRITING: Changed "Book an Appointment" to be more personal. */}
               <Button className="bg-gold text-cream glowing-button">Schedule Your Session</Button>
             </Link>
           </div>
@@ -155,5 +158,5 @@ export default function HomePage() {
       </main>
       <SiteFooter />
     </SiteProvider>
-  );
+  )
 }

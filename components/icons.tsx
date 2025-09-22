@@ -1,32 +1,68 @@
-import type React from "react";
+export function SparkIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="currentColor" />
+      <path d="M19 15L19.5 17.5L22 18L19.5 18.5L19 21L18.5 18.5L16 18L18.5 17.5L19 15Z" fill="currentColor" />
+      <path d="M5 6L5.5 8.5L8 9L5.5 9.5L5 12L4.5 9.5L2 9L4.5 8.5L5 6Z" fill="currentColor" />
+    </svg>
+  )
+}
 
-export function LeafIcon(props: React.SVGProps<SVGSVGElement>) {
+export function LotusIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...props}>
+    <svg
+      className={className}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
+        d="M12 2C12 2 8 6 8 10C8 12.21 9.79 14 12 14C14.21 14 16 12.21 16 10C16 6 12 2 12 2Z"
         fill="currentColor"
-        d="M21 3c-6 1-10.5 5.5-11.9 11.3C6.7 15 5 16.9 5 19c0 2.2 1.8 4 4 4 2.1 0 4-1.7 4.7-4.1C19.5 13.6 23 9 21 3z"
+        opacity="0.8"
       />
+      <path d="M12 14C12 14 6 12 4 16C2.5 18.5 4.5 21 7 20C9.5 19 12 14 12 14Z" fill="currentColor" opacity="0.6" />
+      <path
+        d="M12 14C12 14 18 12 20 16C21.5 18.5 19.5 21 17 20C14.5 19 12 14 12 14Z"
+        fill="currentColor"
+        opacity="0.6"
+      />
+      <path d="M12 14C12 14 10 18 6 18C3.5 18 2 16 3 13.5C4 11 12 14 12 14Z" fill="currentColor" opacity="0.4" />
+      <path d="M12 14C12 14 14 18 18 18C20.5 18 22 16 21 13.5C20 11 12 14 12 14Z" fill="currentColor" opacity="0.4" />
     </svg>
-  );
+  )
 }
-export function LotusIcon(props: React.SVGProps<SVGSVGElement>) {
+
+export function LeafIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...props}>
+    <svg
+      className={className}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
+        d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22.45C8.66 16.7 11.14 12.07 17 10.09C20.5 8.5 21.5 4.5 21.5 4.5S17.5 5.5 17 8Z"
         fill="currentColor"
-        d="M12 2s2.5 3.7 2.5 6.3S12 12 12 12s-2.5-1.7-2.5-3.7S12 2 12 2zm8 7s-1.8 3.6-4 4.7C18.5 15.5 20 18 20 18s-3.2-1.2-5-3c-1.2 1.5-3 3-3 3s-1.8-1.5-3-3c-1.8 1.8-5 3-5 3s1.5-2.5 4-4.3C5.8 12.6 4 9 4 9s3.3.3 6 2c.2-1.5 2-3 2-3s1.8 1.5 2 3c2.7-1.7 6-2 6-2z"
+      />
+      <path
+        d="M3.82 21.34C5.9 16.17 8 10 17 8C17.5 5.5 21.5 4.5 21.5 4.5S20.5 8.5 17 10.09C11.14 12.07 8.66 16.7 5.71 22.45"
+        stroke="currentColor"
+        strokeWidth="0.5"
+        fill="none"
+        opacity="0.6"
       />
     </svg>
-  );
-}
-export function SparkIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...props}>
-      <path
-        fill="currentColor"
-        d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2zm7 10l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3zM2 12l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z"
-      />
-    </svg>
-  );
+  )
 }

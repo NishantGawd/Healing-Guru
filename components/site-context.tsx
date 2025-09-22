@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation"
 import { type AuthChangeEvent, type Session } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/hooks/use-toast"
+import { I18nextProvider } from 'react-i18next'; // Import the provider
+import i18n from '../lib/i18n';
 
 type User = { id: string; name: string; email: string; phone?: string }
 type Appointment = {
@@ -247,7 +249,13 @@ export function SiteProvider({ children }: { children: React.ReactNode }) {
     [user, appointments, isSoundPlaying, toggleSound]
   )
 
-  return <C.Provider value={value}>{children}</C.Provider>
+  return (
+    <I18nextProvider i18n={i18n}>
+      <C.Provider value={value}>
+        {children}
+      </C.Provider>
+    </I18nextProvider>
+  )
 }
 
 export function useAppContext() {

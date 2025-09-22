@@ -1,0 +1,15 @@
+{
+  "home": "Home",
+  "about": "About Me",
+  "services": "Services",
+  "resources": "Resources",
+  "contact": "Contact",
+  "faq": "FAQ",
+  "bookAppointment": "Book an Appointment",
+  "login": "Login",
+  "myDashboard": "My Dashboard",
+  "logout": "Logout",
+  "en": "English",
+  "es": "Español (Spanish)",
+  "fr": "Français (French)"
+}
