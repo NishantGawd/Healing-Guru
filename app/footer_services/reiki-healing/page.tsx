@@ -1,6 +1,6 @@
-"use client"; // Required for AuthProvider and other hooks
+"use client"; // Required for SiteProvider and other hooks
 
-import { AuthProvider } from "@/components/auth-context";
+import { SiteProvider } from "@/components/site-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
@@ -78,12 +78,12 @@ function ReikiHealingPageInner() {
   );
 }
 
-// 2. The main export now simply wraps the "Inner" page with the AuthProvider.
+// 2. The main export now simply wraps the "Inner" page with the SiteProvider.
 export default function ReikiHealingPage() {
     return (
-        <AuthProvider>
+        <SiteProvider>
             <ReikiHealingPageInner />
-        </AuthProvider>
+        </SiteProvider>
     )
 }
 

@@ -8,7 +8,7 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { AuthProvider } from "@/components/auth-context"
+import { SiteProvider } from "@/components/site-context"
 import { Clock, Heart, Sparkles, Brain, Users, ChevronDown, ChevronUp } from "lucide-react"
 
 const SERVICES = [
@@ -113,7 +113,7 @@ const cardTransition = {
 };
 
   return (
-    <AuthProvider>
+    <SiteProvider>
       <SiteHeader />
       <main className="section">
         <div className="container-soft">
@@ -270,6 +270,6 @@ const cardTransition = {
         </div>
       </main>
       <SiteFooter />
-    </AuthProvider>
+    </SiteProvider>
   )
 }

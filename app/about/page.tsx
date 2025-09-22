@@ -4,12 +4,12 @@ import Image from "next/image"
 import { useState, useEffect } from "react" // We need these hooks for the effect
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { AuthProvider } from "@/components/auth-context"
+import { SiteProvider } from "@/components/site-context"
 
 export default function AboutPage() {
 
   return (
-    <AuthProvider>
+    <SiteProvider>
       <SiteHeader />
       <main>
         {/* --- HERO SECTION --- */}
@@ -145,6 +145,6 @@ export default function AboutPage() {
         </section>
       </main>
       <SiteFooter />
-    </AuthProvider>
+    </SiteProvider>
   )
 }

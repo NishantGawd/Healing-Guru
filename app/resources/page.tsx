@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { AuthProvider } from "@/components/auth-context";
+import { SiteProvider } from "@/components/site-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -123,7 +123,7 @@ export default function ResourcesPage() {
   }, [allContent, selectedCategory, searchQuery]);
 
   return (
-    <AuthProvider>
+    <SiteProvider>
       <SiteHeader />
       <main className="section bg-cream">
         <div className="container-soft">
@@ -283,7 +283,7 @@ export default function ResourcesPage() {
         </div>
       </main>
       <SiteFooter />
-    </AuthProvider>
+    </SiteProvider>
   );
 }
 

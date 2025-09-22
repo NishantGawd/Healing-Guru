@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { AuthProvider } from "@/components/auth-context";
+import { SiteProvider } from "@/components/site-context";
 
 function UpdatePasswordInner() {
     const [password, setPassword] = useState("");
@@ -79,11 +79,11 @@ function UpdatePasswordInner() {
 export default function UpdatePasswordPage() {
     return (
         <div className="flex flex-col min-h-screen">
-            <AuthProvider>
+            <SiteProvider>
                 <SiteHeader />
                 <UpdatePasswordInner />
                 <SiteFooter />
-            </AuthProvider>
+            </SiteProvider>
         </div>
     );
 }

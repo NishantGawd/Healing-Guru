@@ -2,7 +2,7 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { AuthProvider } from "@/components/auth-context"
+import { SiteProvider } from "@/components/site-context"
 
 const faqs = [
   {
@@ -25,7 +25,7 @@ const faqs = [
 
 export default function FAQPage() {
   return (
-    <AuthProvider>
+    <SiteProvider>
       <SiteHeader />
       <main className="section">
         <div className="container-soft grid gap-8 md:grid-cols-2">
@@ -55,6 +55,6 @@ export default function FAQPage() {
         </div>
       </main>
       <SiteFooter />
-    </AuthProvider>
+    </SiteProvider>
   )
 }

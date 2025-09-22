@@ -2,7 +2,7 @@
 
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { AuthProvider } from "@/components/auth-context";
+import { SiteProvider } from "@/components/site-context";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,7 @@ import {
 
 const TermsOfServicePage = () => {
   return (
-    <AuthProvider>
+    <SiteProvider>
       <SiteHeader />
     <div className="bg-cream text-charcoal py-16">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -147,7 +147,7 @@ const TermsOfServicePage = () => {
       </div>
     </div>
     <SiteFooter />
-    </AuthProvider>
+    </SiteProvider>
   );
 };
 

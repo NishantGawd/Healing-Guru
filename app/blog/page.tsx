@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { AuthProvider } from "@/components/auth-context"
+import { SiteProvider } from "@/components/site-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -116,7 +116,7 @@ export default function BlogPage() {
   const currentPosts = filteredPosts.slice(startIndex, startIndex + postsPerPage)
 
   return (
-    <AuthProvider>
+    <SiteProvider>
       <SiteHeader />
       <main>
         {/* --- HERO SECTION --- */}
@@ -339,6 +339,6 @@ export default function BlogPage() {
         </section>
       </main>
       <SiteFooter />
-    </AuthProvider>
+    </SiteProvider>
   )
 }

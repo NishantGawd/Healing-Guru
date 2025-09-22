@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { AuthProvider } from "@/components/auth-context"
+import { SiteProvider } from "@/components/site-context"
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -32,7 +32,7 @@ ${message}
   };
 
   return (
-    <AuthProvider>
+    <SiteProvider>
       <SiteHeader />
       <main className="section">
         <div className="container-soft grid gap-8 md:grid-cols-2">
@@ -119,6 +119,6 @@ ${message}
         </div>
       </main>
       <SiteFooter />
-    </AuthProvider>
+    </SiteProvider>
   )
 }

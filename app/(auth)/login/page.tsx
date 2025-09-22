@@ -4,7 +4,7 @@ import { useState } from "react";
 import type React from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { AuthProvider, useAuth } from "@/components/auth-context"; // Import AuthProvider
+import { SiteProvider, useAppContext } from "@/components/site-context"; // Import SiteProvider
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,8 +27,7 @@ function AuthPageInner() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Now this hook call is safe because AuthProvider is a parent
-  const { login, signUp, signInWithGoogle } = useAuth();
+  const { login, signUp, signInWithGoogle } = useAppContext();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -38,14 +37,20 @@ function AuthPageInner() {
     exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
   };
 
+  // --- THIS IS THE FIX ---
+  // We now clear all form inputs when the state is reset.
   const resetFormState = () => {
     setError(null);
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setFullName("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
   };
 
   const toggleView = () => {
-    resetFormState();
+    resetFormState(); // This function now clears everything
     setIsLoginView(!isLoginView);
   };
 
@@ -227,12 +232,12 @@ function AuthPageInner() {
 }
 
 
-// This is the main component for the route. It wraps our UI in the AuthProvider.
+// This is the main component for the route. It wraps our UI in the SiteProvider.
 export default function AuthPage() {
   return (
-    <AuthProvider>
+    <SiteProvider>
       <AuthPageInner />
-    </AuthProvider>
+    </SiteProvider>
   );
 }
 

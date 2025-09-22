@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthProvider } from "@/components/auth-context";
+import { SiteProvider } from "@/components/site-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -70,8 +70,8 @@ const guides = [
 
 export default function ReikiHealingPage() {
   return (
-    <AuthProvider>
+    <SiteProvider>
       <MeditationGuidesPageInner />
-    </AuthProvider>
+    </SiteProvider>
   )
 }

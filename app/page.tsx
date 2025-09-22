@@ -8,7 +8,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AuthProvider } from "@/components/auth-context";
+import { SiteProvider } from "@/components/site-context";
 import { LeafIcon, LotusIcon, SparkIcon } from "@/components/icons";
 import { HumanizedTestimonials } from "@/components/HumanizedTestimonials";
 import { MindfulBreathing } from "@/components/MindfulBreathing";
@@ -27,7 +27,7 @@ export default function HomePage() {
   };
 
   return (
-    <AuthProvider>
+    <SiteProvider>
       <SiteHeader />
       <main>
         {/* Hero Section */}
@@ -154,6 +154,6 @@ export default function HomePage() {
         </section>
       </main>
       <SiteFooter />
-    </AuthProvider>
+    </SiteProvider>
   );
 }

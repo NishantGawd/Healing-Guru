@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useAuth } from "@/components/auth-context"
+import { useAppContext } from "@/components/site-context"
 import { AvailabilityCalendar } from "@/components/availability-calender"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import Link from "next/link"
@@ -51,7 +51,7 @@ const SERVICES = [
 ]
 
 export function BookingWizard() {
-  const { user, addAppointment } = useAuth()
+  const { user, addAppointment } = useAppContext()
   const [step, setStep] = useState(1)
   const [serviceId, setServiceId] = useState(SERVICES[0].id)
   const [date, setDate] = useState("")
@@ -69,6 +69,12 @@ export function BookingWizard() {
   const canNextFrom1 = Boolean(serviceId)
   const canNextFrom2 = Boolean(date && time)
   const canConfirm = Boolean(name && email && time && date && serviceId && isIntakeFormSubmitted)
+  const handleStepClick = (targetStep: number) => {
+    if (targetStep < step) {
+      setStep(targetStep);
+    }
+  };
+
   const handleDateTimeSelect = (selectedDate: string, selectedTime: string) => {
     setDate(selectedDate)
     setTime(selectedTime)
@@ -250,21 +256,31 @@ export function BookingWizard() {
           { num: 2, label: "Date & Time", completed: step > 2 },
           { num: 3, label: "Details", completed: step > 3 },
           { num: 4, label: "Confirmation", completed: step >= 4 },
-        ].map((item, index) => (
-          <div key={item.num} className="flex items-center">
-            <div className="flex items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${item.completed ? "bg-brand text-cream" : step === item.num ? "bg-gold text-cream" : "bg-charcoal/20 text-charcoal/60"}`}
+        ].map((item, index) => {
+          const isCompleted = step > item.num;
+          const isCurrent = step === item.num;
+          const isClickable = isCompleted && item.num < 4; // Can't go back to confirmation
+
+          return (
+            <div key={item.num} className="flex items-center">
+              <button
+                onClick={() => handleStepClick(item.num)}
+                disabled={!isClickable}
+                className={`flex items-center ${isClickable ? "cursor-pointer" : "cursor-default"}`}
               >
-                {item.completed ? <CheckCircle className="w-4 h-4" /> : item.num}
-              </div>
-              <span className={`ml-2 text-sm ${step === item.num ? "text-charcoal font-medium" : "text-charcoal/60"}`}>
-                {item.label}
-              </span>
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${isCompleted ? "bg-brand text-cream" : isCurrent ? "bg-gold text-cream" : "bg-charcoal/20 text-charcoal/60"}`}
+                >
+                  {isCompleted ? <CheckCircle className="w-4 h-4" /> : item.num}
+                </div>
+                <span className={`ml-2 text-sm hidden sm:inline ${isCurrent ? "text-charcoal font-medium" : "text-charcoal/60"}`}>
+                  {item.label}
+                </span>
+              </button>
+              {index < 3 && <div className={`w-4 sm:w-8 h-0.5 mx-2 sm:mx-4 ${isCompleted ? "bg-brand" : "bg-charcoal/20"}`} />}
             </div>
-            {index < 3 && <div className={`w-8 h-0.5 mx-4 ${item.completed ? "bg-brand" : "bg-charcoal/20"}`} />}
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       <div className="animate-in fade-in duration-300">
@@ -345,39 +361,19 @@ export function BookingWizard() {
                 </div>
               )}
 
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-x-6 gap-y-4 grid-cols-1 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Jane Doe"
-                    className="focus:ring-2 focus:ring-brand focus:border-brand transition-colors"
-                    required
-                  />
+                  <Input id="name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
                 </div>
                 <div>
                   <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="jane@example.com"
-                    className="focus:ring-2 focus:ring-brand focus:border-brand transition-colors"
-                    required
-                  />
+                  <Input id="email" placeholder="john@exmaple.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
-                <div>
+                {/* This div now spans the full width on small screens and sits cleanly below */}
+                <div className="sm:col-span-2">
                   <Label htmlFor="phone">Phone Number (for SMS reminders)</Label>
-                  <Input
-                    id="phone"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+919876543210"
-                    type="tel"
-                  />
+                  <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+919876543210" type="tel" />
                   <p className="text-xs text-charcoal/60 mt-1">
                     Please include country code (e.g., +91 for India).
                   </p>

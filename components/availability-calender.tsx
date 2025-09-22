@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useState, useMemo, useEffect } from "react"
-import useSWR from "swr"
-import { format, addYears, startOfDay, isBefore, isSameDay, startOfMonth, endOfMonth, isAfter } from 'date-fns'
-import { ChevronLeft, ChevronRight, Clock } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { LoadingSpinner } from "./loading-spinner"
+import { useState, useMemo, useEffect } from "react";
+import useSWR from "swr";
+import { format, addYears, startOfDay, isBefore, isSameDay, startOfMonth, isAfter, parse } from 'date-fns';
+import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingSpinner } from "./loading-spinner";
 
 // Helper to fetch data with SWR
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -23,6 +23,17 @@ const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const MAX_BOOKINGS_PER_DAY = 3;
 
+const JAIPUR_HOLIDAYS_2025 = new Set([
+  "2025-01-26", // Republic Day
+  "2025-03-14", // Holi
+  "2025-03-31", // Eid al-Fitr (approximate date)
+  "2025-04-14", // Dr. Ambedkar Jayanti
+  "2025-08-15", // Independence Day
+  "2025-10-02", // Gandhi Jayanti
+  "2025-10-21", // Diwali (approximate date)
+  "2025-12-25", // Christmas Day
+]);
+
 export function AvailabilityCalendar({
   selectedDate,
   selectedTime,
@@ -33,11 +44,8 @@ export function AvailabilityCalendar({
   const monthQuery = format(currentMonth, 'yyyy-MM');
   const { data: availabilityData, error, isLoading } = useSWR(`/api/availability?month=${monthQuery}`, fetcher);
 
-  // --- START OF DATE FIX ---
-  // Ensure all date comparisons are against the start of the day to avoid timezone issues.
-  const today = startOfDay(new Date()); 
+  const today = startOfDay(new Date());
   const oneYearFromNow = startOfDay(addYears(today, 1));
-  // --- END OF DATE FIX ---
 
   const calendarDays = useMemo(() => {
     const year = currentMonth.getFullYear();
@@ -55,61 +63,58 @@ export function AvailabilityCalendar({
       
       const bookingsForThisDay = availabilityData?.bookingsByDate?.[dateStr] || 0;
       
-      // --- CORRECTED LOGIC for disabling dates ---
       const isDisabled = 
-        isBefore(currentDay, today) ||              // Is in the past
-        isAfter(currentDay, oneYearFromNow) ||      // Is more than 1 year in the future
-        currentDay.getDay() === 0 ||                // Is a Sunday
-        currentDay.getDay() === 6 ||                // Is a Saturday
-        bookingsForThisDay >= MAX_BOOKINGS_PER_DAY; // Is fully booked
+        isBefore(currentDay, today) ||
+        isAfter(currentDay, oneYearFromNow) ||
+        currentDay.getDay() === 0 || // Is a Sunday
+        JAIPUR_HOLIDAYS_2025.has(dateStr) || // Is a holiday
+        bookingsForThisDay >= MAX_BOOKINGS_PER_DAY;
 
       days.push({
-        date: currentDay,
-        dateStr,
-        dayOfMonth: currentDay.getDate(),
+        date: currentDay, dateStr, dayOfMonth: currentDay.getDate(),
         isCurrentMonth: currentDay.getMonth() === month,
-        isDisabled,
-        isToday: isSameDay(currentDay, today),
+        isDisabled, isToday: isSameDay(currentDay, today),
         isSelected: selectedDate === dateStr,
       });
     }
     return days;
   }, [currentMonth, selectedDate, today, oneYearFromNow, availabilityData]);
 
+  // --- FIX 3: PAST TIME SLOT LOGIC ---
   const availableTimesForDate = useMemo(() => {
     if (!selectedDate || !availabilityData) return [];
+    
+    const isToday = isSameDay(new Date(`${selectedDate}T00:00:00`), today);
+    const now = new Date();
     
     return AVAILABLE_TIMES.map((time) => {
       const timeSlotKey = `${selectedDate}_${time}`;
       const isBooked = availabilityData.bookingsByTimeSlot?.[timeSlotKey] || false;
-      return {
-        time,
-        isAvailable: !isBooked,
-      };
+      
+      let isPast = false;
+      if (isToday) {
+        // Parse the 12-hour time string into a Date object for comparison
+        const timeSlotDate = parse(time, 'hh:mm a', new Date());
+        isPast = isBefore(timeSlotDate, now);
+      }
+
+      return { time, isAvailable: !isBooked && !isPast };
     });
-  }, [selectedDate, availabilityData]);
+  }, [selectedDate, availabilityData, today]);
 
   const handleDateClick = (dateStr: string, isDisabled: boolean) => {
     if (isDisabled) return;
     onDateTimeSelect(dateStr, "");
   };
-
-  const handleTimeClick = (time: string) => {
-    if (selectedDate) {
-      onDateTimeSelect(selectedDate, time);
-    }
-  };
-
+  const handleTimeClick = (time: string) => { if (selectedDate) onDateTimeSelect(selectedDate, time); };
   const navigateMonth = (direction: "prev" | "next") => {
     setCurrentMonth((prev) => {
-      const newMonth = new Date(prev);
-      newMonth.setDate(1);
+      const newMonth = new Date(prev); newMonth.setDate(1);
       newMonth.setMonth(prev.getMonth() + (direction === "next" ? 1 : -1));
       return newMonth;
     });
   };
   
-  // --- CORRECTED LOGIC for disabling navigation buttons ---
   const isPrevMonthDisabled = isBefore(startOfMonth(currentMonth), startOfMonth(today));
   const isNextMonthDisabled = isAfter(startOfMonth(currentMonth), startOfMonth(oneYearFromNow));
 

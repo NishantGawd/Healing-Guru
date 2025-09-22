@@ -7,7 +7,7 @@ import useSWR from "swr";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { AuthProvider, useAuth } from "@/components/auth-context";
+import { SiteProvider, useAppContext } from "@/components/site-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/loading-spinner";
-import { Calendar, Clock, TrendingUp, BookOpen, Plus, CheckCircle, Edit } from "lucide-react";
+import { Calendar, Clock, TrendingUp, BookOpen, Plus, CheckCircle, Edit, Trash2 } from "lucide-react";
 import { AvailabilityCalendar } from "@/components/availability-calender";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,7 +27,7 @@ const fetcher = (url: string) => fetch(url, { cache: 'no-store' }).then((res) =>
 function DashboardInner() {
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [apptToCancel, setApptToCancel] = useState<any | null>(null);
-    const { user, cancelAppointment, rescheduleAppointment } = useAuth();
+    const { user, cancelAppointment, rescheduleAppointment } = useAppContext();
     const { data: apiResponse, error, isLoading, mutate } = useSWR(user ? `/api/dashboard` : null, fetcher);
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
     const [journalEntry, setJournalEntry] = useState("");
@@ -40,6 +40,9 @@ function DashboardInner() {
     const [isAddGoalModalOpen, setIsAddGoalModalOpen] = useState(false);
     const [newGoalTitle, setNewGoalTitle] = useState("");
     const [isSavingGoal, setIsSavingGoal] = useState(false);
+    const [goalToEdit, setGoalToEdit] = useState<any | null>(null);
+    const [updatedGoalTitle, setUpdatedGoalTitle] = useState("");
+    const [goalToDelete, setGoalToDelete] = useState<any | null>(null);
     const dashboardData = apiResponse?.data;
 
     const { stats, upcomingAppointments, pastAppointments } = useMemo(() => {
@@ -77,7 +80,7 @@ function DashboardInner() {
 
     const handleAddNewGoal = async () => {
         if (!newGoalTitle.trim()) {
-            toast({ variant: "destructive", title: "Goal title cannot be empty." });
+            toast({ title: "Goal title cannot be empty." });
             return;
         }
         setIsSavingGoal(true);
@@ -87,16 +90,52 @@ function DashboardInner() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: newGoalTitle }),
             });
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.error || "Failed to save goal.");
-            }
+            if (!res.ok) throw new Error("Failed to save goal.");
             toast({ title: "Goal Added!", description: "Your new goal has been saved." });
-            mutate(); // Re-fetch all dashboard data to show the new goal
+            mutate();
             setIsAddGoalModalOpen(false);
             setNewGoalTitle("");
         } catch (err: any) {
-            toast({ variant: "destructive", title: "Error", description: err.message });
+            toast({ title: "Error", description: err.message });
+        } finally {
+            setIsSavingGoal(false);
+        }
+    };
+
+    const handleUpdateGoal = async () => {
+        if (!goalToEdit || !updatedGoalTitle.trim()) {
+            toast({ title: "Goal title cannot be empty." });
+            return;
+        }
+        setIsSavingGoal(true);
+        try {
+            const res = await fetch(`/api/goals/${goalToEdit.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: updatedGoalTitle }),
+            });
+            if (!res.ok) throw new Error("Failed to update goal.");
+            toast({ title: "Goal Updated!", description: "Your goal has been successfully changed." });
+            mutate();
+            setGoalToEdit(null);
+        } catch (err: any) {
+            toast({  title: "Error", description: err.message });
+        } finally {
+            setIsSavingGoal(false);
+        }
+    };
+
+    const handleDeleteGoal = async () => {
+        if (!goalToDelete) return;
+        setIsSavingGoal(true);
+        try {
+            const res = await fetch(`/api/goals/${goalToDelete.id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error("Failed to delete goal.");
+            toast({ title: "Goal Deleted", description: "Your goal has been removed." });
+            mutate();
+            setGoalToDelete(null);
+        } catch (err: any) {
+            toast({ title: "Error", description: err.message });
         } finally {
             setIsSavingGoal(false);
         }
@@ -204,12 +243,16 @@ function DashboardInner() {
                     </div>
 
                     <Tabs defaultValue="appointments" className="space-y-6">
-                        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
-                            <TabsTrigger value="appointments">Appointments</TabsTrigger>
-                            <TabsTrigger value="progress">Progress & Goals</TabsTrigger>
-                            <TabsTrigger value="journal">Wellness Journal</TabsTrigger>
-                            <TabsTrigger value="profile">My Profile</TabsTrigger>
-                        </TabsList>
+                        <div className="relative overflow-hidden">
+                            <div className="overflow-x-auto whitespace-nowrap scrollbar-hide">
+                                <TabsList className="grid-cols-none md:grid md:w-full md:grid-cols-4">
+                                    <TabsTrigger value="appointments">Appointments</TabsTrigger>
+                                    <TabsTrigger value="progress">Progress & Goals</TabsTrigger>
+                                    <TabsTrigger value="journal">Wellness Journal</TabsTrigger>
+                                    <TabsTrigger value="profile">My Profile</TabsTrigger>
+                                </TabsList>
+                            </div>
+                        </div>
 
                         <TabsContent value="appointments" className="space-y-6">
                             <Card className="bg-white border-beige">
@@ -286,22 +329,24 @@ function DashboardInner() {
                                         {dashboardData.goals.map((goal: any) => (
                                             <div key={goal.id} className="space-y-2">
                                                 <div className="flex items-center justify-between">
-                                                    <h4 className="font-semibold flex items-center">
-                                                        {goal.is_completed && <CheckCircle className="w-4 h-4 text-brand mr-2" />}
-                                                        {goal.title}
-                                                    </h4>
-                                                    <Badge variant={goal.is_completed ? "default" : "secondary"} className={goal.is_completed ? "bg-brand text-cream" : ""}>
-                                                        {goal.progress}%
-                                                    </Badge>
+                                                    <h4 className="font-semibold flex items-center">{goal.is_completed && <CheckCircle className="w-4 h-4 text-brand mr-2" />}{goal.title}</h4>
+                                                    <div className="flex items-center gap-2">
+                                                        <Badge variant={goal.is_completed ? "default" : "secondary"} className={goal.is_completed ? "bg-brand text-cream" : ""}>{goal.progress}%</Badge>
+                                                        {/* Edit and Delete Buttons */}
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" onClick={() => { setGoalToEdit(goal); setUpdatedGoalTitle(goal.title); }}>
+                                                            <Edit className="h-4 w-4 text-charcoal/60" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" onClick={() => setGoalToDelete(goal)}>
+                                                            <Trash2 className="h-4 w-4 text-red-500/70" />
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                                 <Progress value={goal.progress} className="h-2 [&>div]:bg-brand" />
                                             </div>
                                         ))}
                                     </div>
                                     <div className="mt-6 border-t border-beige pt-4">
-                                        <Button onClick={() => setIsAddGoalModalOpen(true)} variant="outline" className="w-full border-brand text-brand hover:bg-brand/5">
-                                            <Plus className="w-4 h-4 mr-2" />Add New Goal
-                                        </Button>
+                                        <Button onClick={() => setIsAddGoalModalOpen(true)} variant="outline" className="w-full border-brand text-brand hover:bg-brand/5"><Plus className="w-4 h-4 mr-2" />Add New Goal</Button>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -351,6 +396,34 @@ function DashboardInner() {
                     </Tabs>
                 </div>
             </main>
+
+            {goalToEdit && (
+                <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+                    <Card className="w-full max-w-md">
+                        <CardHeader><CardTitle className="font-serif text-xl">Edit Goal</CardTitle></CardHeader>
+                        <CardContent>
+                            <Label htmlFor="edit-goal-title">Goal Title</Label>
+                            <Input id="edit-goal-title" value={updatedGoalTitle} onChange={(e) => setUpdatedGoalTitle(e.target.value)} />
+                        </CardContent>
+                        <CardFooter className="flex justify-end gap-2">
+                            <Button variant="ghost" onClick={() => setGoalToEdit(null)}>Cancel</Button>
+                            <Button onClick={handleUpdateGoal} disabled={isSavingGoal} className="bg-gold text-cream">{isSavingGoal ? <LoadingSpinner size="sm" /> : "Save Changes"}</Button>
+                        </CardFooter>
+                    </Card>
+                </div>
+            )}
+            {goalToDelete && (
+                <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+                    <Card className="w-full max-w-md">
+                        <CardHeader><CardTitle className="font-serif text-xl">Confirm Deletion</CardTitle></CardHeader>
+                        <CardContent><p>Are you sure you want to delete the goal: "{goalToDelete.title}"?</p></CardContent>
+                        <CardFooter className="flex justify-end gap-2">
+                            <Button variant="ghost" onClick={() => setGoalToDelete(null)}>Cancel</Button>
+                            <Button variant="destructive" onClick={handleDeleteGoal} disabled={isSavingGoal}>{isSavingGoal ? <LoadingSpinner size="sm" /> : "Delete Goal"}</Button>
+                        </CardFooter>
+                    </Card>
+                </div>
+            )}
 
             {isAddGoalModalOpen && (
                 <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -444,7 +517,7 @@ function ProfileTabContent() {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    const { user, updatePassword, updateProfile } = useAuth();
+    const { user, updatePassword, updateProfile } = useAppContext();
     const { toast } = useToast();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -481,7 +554,6 @@ function ProfileTabContent() {
             if (error && error.code !== 'PGRST116') {
                 console.error("Error fetching profile:", error);
                 toast({
-                    variant: "destructive",
                     title: "Error",
                     description: "Could not load your profile details.",
                 });
@@ -594,11 +666,11 @@ function ProfileTabContent() {
 export default function DashboardPage() {
     return (
         <div className="flex flex-col min-h-screen">
-            <AuthProvider>
+            <SiteProvider>
                 <SiteHeader />
                 <DashboardInner />
                 <SiteFooter />
-            </AuthProvider>
+            </SiteProvider>
         </div>
     );
 }

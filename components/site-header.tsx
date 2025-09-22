@@ -5,7 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { useAuth } from "@/components/auth-context"
+import { useAppContext } from "@/components/site-context"
 import { cn } from "@/lib/utils"
 import { HealingLogo } from "@/components/healing-logo"
 import { usePathname } from "next/navigation"
@@ -23,7 +23,7 @@ const nav = [
 
 export function SiteHeader() {
  const [open, setOpen] = useState(false)
- const { user, logout } = useAuth()
+ const { user, logout } = useAppContext()
  const pathname = usePathname()
 
  return (
@@ -119,6 +119,11 @@ export function SiteHeader() {
        </button>
       </div>
      )}
+     {/* Added the missing buttons in a flex container for alignment */}
+     <div className="flex items-center justify-start gap-2 border-t pt-4 mt-2">
+        <AmbientSoundToggle />
+        <LanguageSwitcher />
+     </div>
     </div>
    </div>
   </header>

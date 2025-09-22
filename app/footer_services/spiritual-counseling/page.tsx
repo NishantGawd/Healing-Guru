@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthProvider } from "@/components/auth-context";
+import { SiteProvider } from "@/components/site-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
@@ -73,8 +73,8 @@ function SpiritualCounselingPageInner() {
 
 export default function ReikiHealingPage() {
   return (
-    <AuthProvider>
+    <SiteProvider>
       <SpiritualCounselingPageInner />
-    </AuthProvider>
+    </SiteProvider>
   )
 }
